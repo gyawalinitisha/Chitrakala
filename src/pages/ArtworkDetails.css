@@ -1,0 +1,125 @@
+.artwork-details {
+    padding-bottom: var(--spacing-2xl);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: var(--color-primary);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--spacing-2xl);
+}
+
+.details-image-wrapper {
+    background: var(--color-bg-card);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.details-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.details-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.details-title {
+    font-size: 3rem;
+    margin-bottom: 0.2rem;
+}
+
+.details-artist {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-lg);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: all 0.3s;
+}
+
+.details-artist:hover {
+    color: var(--color-primary);
+    text-decoration-color: var(--color-primary);
+}
+
+.details-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.details-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background: var(--color-bg-card);
+    border-radius: 4px;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.meta-item .label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+.meta-item .value {
+    font-weight: 600;
+}
+
+.details-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.details-trust {
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.details-trust p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.details-desc h3 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.details-desc p {
+    line-height: 1.8;
+    color: #ccc;
+}
+
+@media (max-width: 900px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+}

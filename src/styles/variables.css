@@ -1,0 +1,47 @@
+:root {
+  /* Premium Dark Palette */
+  --color-bg-main: #0a0a0a;       /* Deep Black */
+  --color-bg-secondary: #141414;  /* Charcoal */
+  --color-bg-card: #1c1c1c;       /* Surface */
+  
+  --color-primary: #d4af37;       /* Metallic Gold */
+  --color-primary-hover: #f9d77e; /* Light Gold */
+  
+  --color-text-main: #f0f0f0;     /* Off-white */
+  --color-text-muted: #a0a0a0;    /* Grey */
+  --color-text-accent: #d4af37;   /* Gold text */
+
+  --color-border: #333333;
+  --color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Typography */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s ease-out;
+  --transition-slow: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Shadows */
+  --shadow-card: 0 10px 30px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+body.light-mode {
+    /* Optional Light Mode mapping (if requested later) */
+    --color-bg-main: #ffffff;
+    --color-bg-secondary: #f4f4f4;
+    --color-bg-card: #ffffff;
+    --color-text-main: #111111;
+    --color-text-muted: #666666;
+    --color-border: #e0e0e0;
+}

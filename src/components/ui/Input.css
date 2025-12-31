@@ -1,0 +1,50 @@
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.input-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.input-field {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0.8rem 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-main);
+    transition: all 0.3s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-bottom-color: var(--color-primary);
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* Optional animated line from center */
+.input-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.input-field:focus+.input-line {
+    width: 100%;
+}

@@ -1,0 +1,104 @@
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 3rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    /* Premium hard edge or slight round */
+    box-shadow: var(--shadow-card);
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 3rem;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    /* Premium hard edge or slight round */
+    box-shadow: var(--shadow-card);
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+}
+
+.role-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.role-btn.active {
+    background: var(--gold-gradient);
+    color: var(--bg-primary);
+    border-color: transparent;
+    font-weight: 500;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--text-secondary);
+}
+
+.text-gold {
+    color: var(--gold-primary);
+    font-weight: 500;
+}
+
+.text-gold:hover {
+    text-decoration: underline;
+}
+.auth-form {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+.auth-submit {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.auth-footer button {
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.3s;
+}
+
+.auth-footer button:hover {
+    text-decoration-color: var(--color-primary);
+}
