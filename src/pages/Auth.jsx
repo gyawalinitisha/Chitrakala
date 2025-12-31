@@ -21,17 +21,26 @@ const Auth = () => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
         try {
+            let userData;
             if (isLogin) {
-                login(formData.email, formData.password);
+                userData = await login(formData.email, formData.password);
             } else {
-                signup(formData.name, formData.email, formData.password, formData.role);
+                userData = await signup(formData.name, formData.email, formData.password, formData.role);
             }
-            navigate('/');
+
+            // Redirect based on role
+            if (userData.role === 'artist') {
+                navigate('/artist-dashboard');
+            } else if (userData.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             setError('Authentication failed. Please try again.');
         }

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 const AuthContext = createContext();
 
@@ -9,98 +10,106 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [allUsers, setAllUsers] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Check local storage for persisted user on mount
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
+        const checkUserLoggedIn = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch(`${API_URL}/auth/me`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-        // Load all users (mock database)
-        const storedUsers = localStorage.getItem('all_users');
-        if (storedUsers) {
-            setAllUsers(JSON.parse(storedUsers));
-        }
-
-        setLoading(false);
-    }, []);
-
-    const login = (email, password) => {
-        // Super simple Admin backdoor for testing
-        if (email === 'admin@gallery.com' && password === 'admin123') {
-            const adminUser = {
-                id: 'admin-001',
-                name: 'Gallery Admin',
-                email: 'admin@gallery.com',
-                role: 'admin'
-            };
-            setUser(adminUser);
-            localStorage.setItem('user', JSON.stringify(adminUser));
-            return true;
-        }
-
-        // Check against registered users
-        const foundUser = allUsers.find(u => u.email === email && u.password === password);
-        if (foundUser) {
-            const { password, ...userWithoutPass } = foundUser; // Don't put pass in session
-            setUser(userWithoutPass);
-            localStorage.setItem('user', JSON.stringify(userWithoutPass));
-            return true;
-        }
-
-        // Fallback for "Demo User" if not found in list (backward compatibility)
-        if (email.includes('@')) {
-            const mockUser = {
-                id: '1',
-                name: 'Demo User',
-                email: email,
-                role: 'collector',
-            };
-            setUser(mockUser);
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            return true;
-        }
-
-        throw new Error("Invalid credentials");
-    };
-
-    const signup = (name, email, password, role) => {
-        const newUser = {
-            id: Date.now().toString(),
-            name,
-            email,
-            password, // Storing password in plain text for this mock only!
-            role,
-            joined: new Date().toLocaleDateString()
+                    if (res.ok) {
+                        const userData = await res.json();
+                        setUser(userData);
+                    } else {
+                        // Token invalid/expired
+                        localStorage.removeItem('token');
+                        setUser(null);
+                    }
+                } catch (err) {
+                    console.error("Auth check failed:", err);
+                    localStorage.removeItem('token');
+                    setUser(null);
+                }
+            }
+            setLoading(false);
         };
 
-        setAllUsers(prev => {
-            const updated = [...prev, newUser];
-            localStorage.setItem('all_users', JSON.stringify(updated));
-            return updated;
-        });
+        checkUserLoggedIn();
+    }, []);
 
-        // Auto login after signup
-        const { password: _, ...userSession } = newUser;
-        setUser(userSession);
-        localStorage.setItem('user', JSON.stringify(userSession));
-        return true;
+    const login = async (email, password) => {
+        setError(null);
+        try {
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                setUser(data);
+                return data;
+            } else {
+                setError(data.message || 'Login failed');
+                throw new Error(data.message || 'Login failed');
+            }
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
+    const signup = async (name, email, password, role) => {
+        setError(null);
+        try {
+            const res = await fetch(`${API_URL}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password, role })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                setUser(data);
+                return data;
+            } else {
+                setError(data.message || 'Signup failed');
+                throw new Error(data.message || 'Signup failed');
+            }
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
     };
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
+        localStorage.removeItem('token');
     };
 
     const value = {
         user,
-        allUsers, // Expose for Admin Dashboard
         login,
         signup,
         logout,
-        loading
+        loading,
+        error
     };
 
     return (
