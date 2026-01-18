@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Simple root route
 app.get('/', (req, res) => {

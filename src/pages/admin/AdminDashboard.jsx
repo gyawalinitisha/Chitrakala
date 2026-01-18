@@ -1,14 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGallery } from '../../context/GalleryContext';
 import Button from '../../components/ui/Button';
 import { Trash2, User, Shield, CheckCircle } from 'lucide-react';
+import { API_URL } from '../../config';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-    const { user, allUsers } = useAuth();
+    const { user } = useAuth();
     const { artworks, deleteArtwork } = useGallery();
     const [activeTab, setActiveTab] = useState('users');
+    const [users, setUsers] = useState([]);
+    const [stats, setStats] = useState({ userCount: 0, artistCount: 0 });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const headers = {
+                    'Authorization': `Bearer ${token}`
+                };
+
+                // Fetch Users
+                const usersRes = await fetch(`${API_URL}/admin/users`, { headers });
+                const usersData = await usersRes.json();
+                if (usersRes.ok) setUsers(usersData);
+
+                // Fetch Stats
+                const statsRes = await fetch(`${API_URL}/admin/stats`, { headers });
+                const statsData = await statsRes.json();
+                if (statsRes.ok) setStats(statsData);
+
+            } catch (error) {
+                console.error("Error fetching admin data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user?.role === 'admin') {
+            fetchData();
+        }
+    }, [user]);
 
     if (user?.role !== 'admin') {
         return <div className="page-content container">Access Denied. Admin only area.</div>;
@@ -35,15 +69,15 @@ const AdminDashboard = () => {
             <div className="dashboard-stats">
                 <div className="stat-card">
                     <h3>Total Users</h3>
-                    <p className="stat-value">{allUsers.length + 1} <small>(+Guest)</small></p>
+                    <p className="stat-value">{stats.userCount || 0}</p>
                 </div>
                 <div className="stat-card">
                     <h3>Total Artworks</h3>
                     <p className="stat-value">{artworks.length}</p>
                 </div>
                 <div className="stat-card">
-                    <h3>Platform Sales</h3>
-                    <p className="stat-value">NRP 0</p>
+                    <h3>Artists</h3>
+                    <p className="stat-value">{stats.artistCount || 0}</p>
                 </div>
             </div>
 
@@ -63,19 +97,18 @@ const AdminDashboard = () => {
             </div>
 
             <div className="admin-content glass-card animate-fade-in">
-                {activeTab === 'users' ? (
+                {loading ? <p>Loading...</p> : activeTab === 'users' ? (
                     <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
-                                <th>Joined</th>
-                                <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {allUsers.map((u, index) => (
+                            {users.map((u, index) => (
                                 <tr key={index}>
                                     <td>
                                         <div className="user-cell">
@@ -85,11 +118,13 @@ const AdminDashboard = () => {
                                     </td>
                                     <td>{u.email}</td>
                                     <td><span className={`role-badge ${u.role}`}>{u.role}</span></td>
-                                    <td>{u.joined || 'N/A'}</td>
-                                    <td><span className="status-active">Active</span></td>
+                                    <td>
+                                        {/* Placeholder for future actions */}
+                                        <span className="status-active">Active</span>
+                                    </td>
                                 </tr>
                             ))}
-                            {allUsers.length === 0 && (
+                            {users.length === 0 && (
                                 <tr><td colSpan="5" className="text-center">No registered users yet.</td></tr>
                             )}
                         </tbody>
