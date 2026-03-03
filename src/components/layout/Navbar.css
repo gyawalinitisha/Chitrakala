@@ -117,7 +117,14 @@
     justify-content: center;
     font-weight: bold;
     font-size: 0.9rem;
-    cursor: default;
+    cursor: pointer;
+    text-decoration: none;
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.user-avatar:hover {
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.35);
+    transform: scale(1.05);
 }
 
 .badge-artist {

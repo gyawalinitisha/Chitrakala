@@ -1,15 +1,23 @@
 :root {
   /* Premium Dark Palette */
-  --color-bg-main: #0a0a0a;       /* Deep Black */
-  --color-bg-secondary: #141414;  /* Charcoal */
-  --color-bg-card: #1c1c1c;       /* Surface */
-  
-  --color-primary: #d4af37;       /* Metallic Gold */
-  --color-primary-hover: #f9d77e; /* Light Gold */
-  
-  --color-text-main: #f0f0f0;     /* Off-white */
-  --color-text-muted: #a0a0a0;    /* Grey */
-  --color-text-accent: #d4af37;   /* Gold text */
+  --color-bg-main: #0a0a0a;
+  /* Deep Black */
+  --color-bg-secondary: #141414;
+  /* Charcoal */
+  --color-bg-card: #1c1c1c;
+  /* Surface */
+
+  --color-primary: #d4af37;
+  /* Metallic Gold */
+  --color-primary-hover: #f9d77e;
+  /* Light Gold */
+
+  --color-text-main: #f0f0f0;
+  /* Off-white */
+  --color-text-muted: #a0a0a0;
+  /* Grey */
+  --color-text-accent: #d4af37;
+  /* Gold text */
 
   --color-border: #333333;
   --color-overlay: rgba(0, 0, 0, 0.7);
@@ -32,16 +40,32 @@
   --transition-slow: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   /* Shadows */
-  --shadow-card: 0 10px 30px rgba(0,0,0,0.3);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
   --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.15);
+
+  /* ── Legacy aliases (keeps all existing CSS files working) ── */
+  --gold-primary: #d4af37;
+  --gold-gradient: linear-gradient(135deg, #d4af37, #f9d77e);
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --bg-primary: #0a0a0a;
+  --bg-card: #1c1c1c;
+  --bg-secondary: #141414;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
 }
 
 body.light-mode {
-    /* Optional Light Mode mapping (if requested later) */
-    --color-bg-main: #ffffff;
-    --color-bg-secondary: #f4f4f4;
-    --color-bg-card: #ffffff;
-    --color-text-main: #111111;
-    --color-text-muted: #666666;
-    --color-border: #e0e0e0;
+  /* Optional Light Mode mapping (if requested later) */
+  --color-bg-main: #ffffff;
+  --color-bg-secondary: #f4f4f4;
+  --color-bg-card: #ffffff;
+  --color-text-main: #111111;
+  --color-text-muted: #666666;
+  --color-border: #e0e0e0;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --bg-primary: #ffffff;
+  --bg-card: #ffffff;
 }

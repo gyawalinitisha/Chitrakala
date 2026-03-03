@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { Menu, X, ShoppingCart, User, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, LogOut, MessageCircle } from 'lucide-react';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -50,11 +50,17 @@ const Navbar = () => {
                         {cartItems.length > 0 && <span className="cart-count">{cartItems.length}</span>}
                     </Link>
 
+                    {user && (
+                        <Link to="/inbox" className="action-btn" title="Messages">
+                            <MessageCircle size={20} />
+                        </Link>
+                    )}
+
                     {user ? (
                         <div className="user-menu">
-                            <div className="user-avatar" title={user.name}>
+                            <Link to="/profile" className="user-avatar" title={`${user.name} – View Profile`}>
                                 {userInitials}
-                            </div>
+                            </Link>
                             <button onClick={logout} className="action-btn logout-btn" title="Logout">
                                 <LogOut size={20} />
                             </button>

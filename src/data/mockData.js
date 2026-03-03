@@ -3,6 +3,8 @@ export const artworks = [
         id: 1,
         title: "Mystic Himalayas",
         artist: "Aarav Sharma",
+        artistId: "artist_1",
+        artistImage: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 45,000",
         image: "https://images.unsplash.com/photo-1544084944-152696a63f72?q=80&w=2540&auto=format&fit=crop",
         category: "Landscape"
@@ -11,6 +13,8 @@ export const artworks = [
         id: 2,
         title: "Kathmandu Valley Dusk",
         artist: "Sita Rai",
+        artistId: "artist_2",
+        artistImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 32,000",
         image: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=2670&auto=format&fit=crop",
         category: "Cityscape"
@@ -19,6 +23,8 @@ export const artworks = [
         id: 3,
         title: "Golden Temple Detail",
         artist: "Rajesh Maharjan",
+        artistId: "artist_3",
+        artistImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 55,000",
         image: "https://images.unsplash.com/photo-1528659588079-052a94595e63?q=80&w=2670&auto=format&fit=crop",
         category: "Architecture"
@@ -27,6 +33,8 @@ export const artworks = [
         id: 4,
         title: "Spiritual Awakening",
         artist: "Priya Gurung",
+        artistId: "artist_4",
+        artistImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 28,000",
         image: "https://images.unsplash.com/photo-1605648916361-9bc12ad6a569?q=80&w=2670&auto=format&fit=crop",
         category: "Abstract"
@@ -35,6 +43,8 @@ export const artworks = [
         id: 5,
         title: "Newari Festival",
         artist: "Kiran Thapa",
+        artistId: "artist_5",
+        artistImage: "https://images.unsplash.com/photo-1522075469751-3a3694fb60ed?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 40,000",
         image: "https://images.unsplash.com/photo-1563810141254-20d43763f350?q=80&w=2670&auto=format&fit=crop",
         category: "Cultural"
@@ -43,6 +53,8 @@ export const artworks = [
         id: 6,
         title: "Mithila Colours",
         artist: "Sunita Kamath",
+        artistId: "artist_6",
+        artistImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=2574&auto=format&fit=crop",
         price: "NPR 25,000",
         image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=2545&auto=format&fit=crop",
         category: "Traditional"
