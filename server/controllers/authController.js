@@ -57,6 +57,7 @@ const registerUser = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            profileImage: user.profileImage || "",
             token: generateToken(user._id),
         });
     } else {
@@ -84,6 +85,7 @@ const loginUser = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            profileImage: user.profileImage || "",
             token: generateToken(user._id),
         });
     } else {
@@ -117,6 +119,43 @@ const getUserByName = async (req, res) => {
     }
 };
 
+// @desc    Get all artists
+// @route   GET /api/auth/artists
+// @access  Public
+const getAllArtists = async (req, res) => {
+    try {
+        const artists = await User.find({ role: 'artist' }).select('_id name email profileImage bio createdAt');
+        res.status(200).json(artists);
+    } catch (error) {
+        console.error("Error fetching artists:", error);
+        res.status(500).json({ message: 'Error fetching artists', error: error.message });
+    }
+};
+
+// @desc    Update user profile image
+// @route   PUT /api/auth/profile-image
+// @access  Private
+const updateProfileImage = async (req, res) => {
+    try {
+        const { profileImage } = req.body;
+
+        if (!profileImage) {
+            return res.status(400).json({ message: 'Profile image is required' });
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user._id,
+            { profileImage },
+            { new: true }
+        ).select('_id name email profileImage role');
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error updating profile image:", error);
+        res.status(500).json({ message: 'Error updating profile image', error: error.message });
+    }
+};
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -129,4 +168,6 @@ module.exports = {
     loginUser,
     getMe,
     getUserByName,
+    getAllArtists,
+    updateProfileImage,
 };
