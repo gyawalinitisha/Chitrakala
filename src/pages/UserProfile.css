@@ -99,8 +99,36 @@
 
 .role-admin {
     background: rgba(239, 68, 68, 0.12);
-    color: #f87171;
+    color: #ef4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.profile-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gold-primary);
+    color: #0a0a0a;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.profile-upload-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+.profile-upload-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* ─── Info ─── */

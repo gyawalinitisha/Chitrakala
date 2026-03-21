@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Mail, Shield, Palette, User } from 'lucide-react';
+import { API_URL } from '../config';
+import { LogOut, Mail, Shield, Palette, User, Camera, Upload } from 'lucide-react';
 import './UserProfile.css';
 
 const UserProfile = () => {
-    const { user, logout } = useAuth();
+    const { user, logout, setUser } = useAuth();
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
+    const [uploading, setUploading] = useState(false);
 
     if (!user) {
         navigate('/auth');
@@ -24,6 +27,48 @@ const UserProfile = () => {
     const handleLogout = () => {
         logout();
         navigate('/');
+    };
+
+    const handleProfileImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch(`${API_URL}/auth/profile-image`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            profileImage: reader.result
+                        })
+                    });
+
+                    if (res.ok) {
+                        const updatedUser = await res.json();
+                        setUser(updatedUser);
+                        alert('Profile picture updated successfully!');
+                    } else {
+                        alert('Failed to update profile picture');
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile image:", error);
+                    alert('Error uploading profile picture');
+                } finally {
+                    setUploading(false);
+                }
+            };
+            reader.readAsDataURL(file);
+        } catch (error) {
+            console.error("Error reading file:", error);
+            setUploading(false);
+        }
     };
 
     const roleConfig = {
@@ -49,6 +94,23 @@ const UserProfile = () => {
                                 <span className="profile-avatar-initials">{userInitials}</span>
                             )}
                         </div>
+                        {user.role === 'artist' && (
+                            <button 
+                                className="profile-upload-btn"
+                                onClick={() => fileInputRef.current?.click()}
+                                title="Upload profile picture"
+                                disabled={uploading}
+                            >
+                                {uploading ? <Upload size={16} /> : <Camera size={16} />}
+                            </button>
+                        )}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleProfileImageUpload}
+                            style={{ display: 'none' }}
+                        />
                         <span className={`profile-role-badge ${role.class}`}>
                             {role.icon} {role.label}
                         </span>

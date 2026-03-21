@@ -1,24 +1,30 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ShoppingBag, Shield, Lock, CheckCircle } from 'lucide-react';
 import './Cart.css';
 
 const Cart = () => {
-    const { cartItems, removeFromCart, cartTotal, clearCart } = useCart();
+    const { cartItems, removeFromCart, cartTotal } = useCart();
+    const navigate = useNavigate();
 
     const handleCheckout = () => {
-        // Placeholder for Khalti integration
-        console.log('Initiating Khalti payment for amount:', cartTotal);
-        alert(`Checkout initiated! Total: NRP ${cartTotal}\n(Khalti Integration Placeholder)`);
-        clearCart(); // Simulate successful payment
+        navigate('/checkout');
     };
 
     if (cartItems.length === 0) {
         return (
             <div className="page-content container cart-page empty-state">
-                <h1>Your Cart</h1>
-                <p>Your cart is empty. Start exploring artworks!</p>
+                {/* Background decorations */}
+                <div className="cart-orb-1"></div>
+                <div className="cart-orb-2"></div>
+
+                <div className="empty-cart-icon">
+                    <ShoppingBag size={52} />
+                </div>
+                <h1>Your Cart is Empty</h1>
+                <p>You haven't added any artworks yet. Explore our gallery and find something beautiful!</p>
                 <Button to="/gallery" variant="primary">Browse Gallery</Button>
             </div>
         );
@@ -26,41 +32,85 @@ const Cart = () => {
 
     return (
         <div className="page-content container cart-page">
-            <h1 className="cart-title">Your Cart</h1>
+            {/* Background decorations */}
+            <div className="cart-orb-1"></div>
+            <div className="cart-orb-2"></div>
+
+            {/* Header */}
+            <div className="cart-header">
+                <span className="cart-header-label">✦ Your Selection</span>
+                <h1 className="cart-title">Your Cart</h1>
+                <p className="cart-item-count">{cartItems.length} artwork{cartItems.length !== 1 ? 's' : ''} ready to be yours</p>
+            </div>
+
+            <div className="cart-divider"></div>
 
             <div className="cart-grid">
+                {/* Items List */}
                 <div className="cart-items">
-                    {cartItems.map((item) => (
-                        <div key={item.id} className="cart-item glass-card">
-                            <img src={item.image} alt={item.title} className="cart-item-image" />
-                            <div className="cart-item-details">
-                                <h3>{item.title}</h3>
-                                <p className="text-gold">NRP {item.price}</p>
+                    {cartItems.map((item) => {
+                        // Handle artist as string or object
+                        const artistName = typeof item.artist === 'string' ? item.artist : item.artist?.name || 'Unknown Artist';
+                        // Handle price formatting
+                        const displayPrice = typeof item.price === 'number' ? `NRP ${item.price.toLocaleString('en-IN')}` : item.price;
+                        // Use _id from API or id from localStorage
+                        const itemId = item._id || item.id;
+                        
+                        return (
+                            <div key={itemId} className="cart-item">
+                                <img src={item.image} alt={item.title} className="cart-item-image" />
+                                <div className="cart-item-details">
+                                    <h3>{item.title}</h3>
+                                    <p className="cart-item-artist">by {artistName}</p>
+                                    <p className="cart-item-price">{displayPrice}</p>
+                                </div>
+                                <button
+                                    className="remove-btn"
+                                    onClick={() => removeFromCart(itemId)}
+                                    title="Remove from cart"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
                             </div>
-                            <button
-                                className="remove-btn"
-                                onClick={() => removeFromCart(item.id)}
-                            >
-                                <Trash2 size={20} />
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
-                <div className="cart-summary glass-card">
+                {/* Order Summary */}
+                <div className="cart-summary">
                     <h2>Order Summary</h2>
                     <div className="summary-row">
-                        <span>Subtotal</span>
-                        <span>NRP {cartTotal}</span>
+                        <span>Subtotal ({cartItems.length} items)</span>
+                        <span>NRP {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="summary-row">
+                        <span>Shipping</span>
+                        <span style={{ color: '#4ade80' }}>Calculated at checkout</span>
                     </div>
                     <div className="summary-row total">
                         <span>Total</span>
-                        <span>NRP {cartTotal}</span>
+                        <span>NRP {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
                     </div>
 
                     <button className="khalti-btn" onClick={handleCheckout}>
-                        Pay with Khalti
+                        Proceed to Checkout →
                     </button>
+
+                    {/* Security Badges */}
+                    <div className="cart-secure-badges">
+                        <div className="secure-badge">
+                            <Shield size={13} />
+                            <span>Secure</span>
+                        </div>
+                        <div className="secure-badge">
+                            <Lock size={13} />
+                            <span>Encrypted</span>
+                        </div>
+                        <div className="secure-badge">
+                            <CheckCircle size={13} />
+                            <span>Verified</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
