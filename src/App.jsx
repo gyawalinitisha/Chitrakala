@@ -9,10 +9,12 @@ import ChatWindow from "./components/chat/ChatWindow";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
+import Artists from "./pages/Artists";
 import ArtistProfile from "./pages/ArtistProfile";
 import Auth from "./pages/Auth";
 import ArtworkDetails from "./pages/ArtworkDetails";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Inbox from './pages/Inbox';
 
 import ArtistDashboard from "./pages/artist/ArtistDashboard";
@@ -31,10 +33,12 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/artists" element={<Artists />} />
                   <Route path="/artist/:id" element={<ArtistProfile />} />
                   <Route path="/artwork/:id" element={<ArtworkDetails />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
                   <Route path="/inbox" element={<Inbox />} />
                   <Route path="/profile" element={<UserProfile />} />
                   <Route path="/artist-dashboard" element={<ArtistDashboard />} />
