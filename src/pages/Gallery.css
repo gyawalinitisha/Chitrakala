@@ -1,52 +1,423 @@
-.gallery-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-    padding-top: var(--spacing-lg);
+/* ═══════════════════════════════════════
+   GALLERY PAGE — Saatchi Art Style
+═══════════════════════════════════════ */
+
+.gallery-page {
+    min-height: 100vh;
+    background: #09090d;
 }
 
-.gallery-header h1 {
-    font-size: 3.5rem;
-    margin-bottom: var(--spacing-xs);
-}
-
-.gallery-controls {
-    display: flex;
-    justify-content: center;
-    margin-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: var(--spacing-md);
-}
-
-.filter-scroll {
-    display: flex;
-    gap: var(--spacing-md);
+/* ════════════════════════════════════
+   CATEGORY NAV BAR
+   Clean horizontal bar like Saatchi Art
+════════════════════════════════════ */
+.gallery-category-bar {
+    position: sticky;
+    top: 70px; /* sits just under navbar */
+    z-index: 90;
+    background: rgba(10, 10, 14, 0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     overflow-x: auto;
-    padding-bottom: 5px;
+    scrollbar-width: none;
 }
 
-.filter-btn {
-    padding: 8px 16px;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: all 0.3s;
+.gallery-category-bar::-webkit-scrollbar { display: none; }
+
+.gallery-category-inner {
+    display: flex;
+    align-items: center;
+    min-width: max-content;
+    padding: 0 2rem;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.category-nav-btn {
+    padding: 1rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: rgba(180, 180, 180, 0.85);
+    background: none;
+    border: none;
     border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    font-family: var(--font-body);
 }
 
-.filter-btn:hover,
-.filter-btn.active {
+.category-nav-btn:hover {
+    color: #fff;
+}
+
+.category-nav-btn.active {
     color: var(--color-primary);
+    font-weight: 600;
     border-bottom-color: var(--color-primary);
 }
 
-.filter-toggle-mobile {
-    display: none;
+/* ════════════════════════════════════
+   HERO BANNER — full width like Saatchi
+════════════════════════════════════ */
+.gallery-hero {
+    position: relative;
+    width: 100%;
+    height: 520px;
+    overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    .filter-toggle-mobile {
-        display: block;
-        margin-left: auto;
-    }
+.gallery-hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    transition: transform 8s ease;
+}
+
+.gallery-hero:hover .gallery-hero-img {
+    transform: scale(1.03);
+}
+
+/* Dark gradient overlay for text legibility */
+.gallery-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        rgba(0, 0, 0, 0.72) 0%,
+        rgba(0, 0, 0, 0.4) 45%,
+        rgba(0, 0, 0, 0.1) 100%
+    );
+}
+
+/* Text content bottom-left, Saatchi style */
+.gallery-hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 3rem 4rem;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.gallery-hero-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    padding: 0.3rem 0.9rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 50px;
+    background: rgba(212, 175, 55, 0.08);
+    width: fit-content;
+}
+
+.gallery-hero-title {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.gallery-hero-sub {
+    font-size: 0.95rem;
+    color: rgba(230, 230, 230, 0.85);
+    line-height: 1.5;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+}
+
+.gallery-hero-cta {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.7rem 2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0a0a0a;
+    background: linear-gradient(135deg, #d4af37, #f9d77e);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    width: fit-content;
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+}
+
+.gallery-hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45);
+}
+
+/* ════════════════════════════════════
+   GRID SECTION
+════════════════════════════════════ */
+.gallery-grid-section {
+    padding: 3rem 0 6rem;
+}
+
+.gallery-grid-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.gallery-grid-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.gallery-results-count {
+    font-size: 0.82rem;
+    color: rgba(160, 160, 160, 0.7);
+}
+
+.gallery-loading {
+    text-align: center;
+    padding: 5rem 0;
+    color: var(--text-secondary);
+}
+
+/* ════════════════════════════════════
+   ARTWORK GRID — uniform 4-column
+════════════════════════════════════ */
+.artwork-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--text-secondary);
+}
+
+.gallery-empty h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media (max-width: 1200px) {
+    .artwork-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+    .gallery-hero { height: 400px; }
+    .gallery-hero-title { font-size: 2.4rem; }
+    .gallery-hero-content { padding: 2rem; }
+    .artwork-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+    .gallery-hero { height: 300px; }
+    .gallery-hero-title { font-size: 1.8rem; }
+    .artwork-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+    .gallery-category-inner { padding: 0 1rem; }
+}
+
+/* ════════════════════════════════════════
+   MEET THE ARTISTS — Saatchi Art Style
+════════════════════════════════════════ */
+.meet-artists-section {
+    padding: 5rem 0 7rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.meet-artists-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.meet-artists-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0rem;
+}
+
+.meet-artists-title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0rem;
+}
+
+.meet-artists-sub {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.meet-artists-view-all {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.meet-artists-view-all:hover {
+    color: #fff;
+    transform: translateX(4px);
+}
+
+/* 3-column grid */
+.meet-artists-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+/* Individual artist card */
+.artist-profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+}
+
+.artist-profile-card:hover {
+    transform: translateY(-8px);
+}
+
+.artist-card-img-wrap {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.artist-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.artist-profile-card:hover .artist-card-img {
+    transform: scale(1.08);
+}
+
+.artist-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+}
+
+.artist-card-name {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.artist-card-role {
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.artist-card-email {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+    transition: color 0.3s ease;
+}
+
+.artist-profile-card:hover .artist-card-email {
+    color: var(--color-primary);
+}
+
+.artist-card-hover {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-top: 0.5rem;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.3s ease;
+}
+
+.artist-profile-card:hover .artist-card-hover {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.artist-meet-link {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+    padding-bottom: 2px;
+    width: fit-content;
+    transition: all 0.25s ease;
+}
+
+.artist-meet-link:hover {
+    color: #f9d77e;
+    border-bottom-color: #f9d77e;
+    letter-spacing: 0.14em;
+}
+
+@media (max-width: 900px) {
+    .meet-artists-grid { grid-template-columns: repeat(2, 1fr); }
+    .meet-artists-title { font-size: 2rem; }
+}
+
+@media (max-width: 560px) {
+    .meet-artists-grid { grid-template-columns: 1fr; }
 }
