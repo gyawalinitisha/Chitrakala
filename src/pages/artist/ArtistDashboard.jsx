@@ -4,12 +4,15 @@ import { useGallery } from '../../context/GalleryContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { Plus, Image as ImageIcon, Upload } from 'lucide-react';
+import { API_URL } from '../../config';
 import './ArtistDashboard.css';
 
 const ArtistDashboard = () => {
     const { user } = useAuth();
-    const { addArtwork, artworks } = useGallery();
+    const { fetchArtworks, artworks } = useGallery();
     const [showForm, setShowForm] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [imagePreview, setImagePreview] = useState('');
     const fileInputRef = useRef(null);
 
     // Form State
@@ -21,7 +24,10 @@ const ArtistDashboard = () => {
         image: ''
     });
 
-    const myArtworks = artworks.filter(art => art.artist === user?.name);
+    const myArtworks = artworks.filter(art => {
+        // Handle both old localStorage format and new API format
+        return art.artist === user?.name || (art.artist && art.artist._id === user?._id);
+    });
 
     if (user?.role !== 'artist') {
         return <div className="page-content container">Access Denied. Artist only area.</div>;
@@ -30,6 +36,14 @@ const ArtistDashboard = () => {
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Show preview
+            const previewReader = new FileReader();
+            previewReader.onloadend = () => {
+                setImagePreview(previewReader.result);
+            };
+            previewReader.readAsDataURL(file);
+
+            // Store file for upload
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFormData(prev => ({ ...prev, image: reader.result }));
@@ -38,7 +52,7 @@ const ArtistDashboard = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.image) {
@@ -46,16 +60,51 @@ const ArtistDashboard = () => {
             return;
         }
 
-        const newArt = {
-            id: Date.now(),
-            ...formData,
-            artist: user.name,
-            price: Number(formData.price) // Ensure number
-        };
-        addArtwork(newArt);
-        setFormData({ title: '', price: '', category: 'Landscape', description: '', image: '' });
-        setShowForm(false);
-        alert('Artwork uploaded successfully!');
+        if (!formData.title || !formData.price || !formData.description) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        setUploading(true);
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${API_URL}/artworks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    title: formData.title,
+                    description: formData.description,
+                    price: Number(formData.price),
+                    category: formData.category,
+                    image: formData.image // Send base64 image
+                })
+            });
+
+            if (res.ok) {
+                const artwork = await res.json();
+                console.log("Artwork uploaded successfully:", artwork);
+                
+                // Refresh artworks list
+                fetchArtworks();
+                
+                setFormData({ title: '', price: '', category: 'Landscape', description: '', image: '' });
+                setImagePreview('');
+                setShowForm(false);
+                alert('Artwork uploaded successfully!');
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.message}`);
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert('Failed to upload artwork. Please try again.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
@@ -103,6 +152,17 @@ const ArtistDashboard = () => {
                             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                             required
                         />
+                        <div className="form-group">
+                            <label className="form-label">Description</label>
+                            <textarea
+                                className="form-textarea"
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                placeholder="Describe your artwork..."
+                                rows="4"
+                                required
+                            />
+                        </div>
 
                         <div className="form-group">
                             <label className="form-label">Artwork Image</label>
@@ -132,8 +192,8 @@ const ArtistDashboard = () => {
                         </div>
 
                         <div className="form-actions">
-                            <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
-                            <Button type="submit">Publish Artwork</Button>
+                            <Button variant="outline" onClick={() => setShowForm(false)} disabled={uploading}>Cancel</Button>
+                            <Button type="submit" disabled={uploading}>{uploading ? 'Uploading...' : 'Publish Artwork'}</Button>
                         </div>
                     </form>
                 </div>

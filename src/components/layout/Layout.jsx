@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
+import Toast from '../ui/Toast';
 // Footer import will go here later
 // import Footer from './Footer';
 
@@ -7,6 +8,7 @@ const Layout = ({ children }) => {
     return (
         <div className="app-layout">
             <Navbar />
+            <Toast />
             <main className="main-content">
                 {children}
             </main>

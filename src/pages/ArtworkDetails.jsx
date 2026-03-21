@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useGallery } from '../context/GalleryContext';
 import { useChat } from '../context/ChatContext';
-import Button from '../components/ui/Button';
-import { ArrowLeft, ShoppingBag, MessageCircle } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, MessageCircle, Shield, RotateCcw, Award } from 'lucide-react';
 import './ArtworkDetails.css';
 
 const ArtworkDetails = () => {
@@ -12,19 +11,36 @@ const ArtworkDetails = () => {
     const navigate = useNavigate();
     const { addToCart } = useCart();
     const { artworks } = useGallery();
-    const { openChat } = useChat(); // Use Chat Context
+    const { openChat } = useChat();
 
-    // Find artwork by ID (handle both string and number types)
-    const artwork = artworks.find(a => a.id.toString() === id);
+    const artwork = artworks.find(a => {
+        // Handle both API format (MongoDB _id) and localStorage format (id)
+        return a._id?.toString() === id || a.id?.toString() === id;
+    });
 
     if (!artwork) {
-        return <div className="container page-content">Artwork not found</div>;
+        return (
+            <div className="artwork-details-page container" style={{ paddingTop: '10rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                Artwork not found
+            </div>
+        );
     }
 
+    // Handle artist as string or object
+    const artistName = typeof artwork.artist === 'string' ? artwork.artist : artwork.artist?.name || 'Unknown Artist';
+    // Handle price formatting
+    const displayPrice = typeof artwork.price === 'number' ? `NRP ${artwork.price.toLocaleString('en-IN')}` : artwork.price;
+
     const handleAddToCart = () => {
+        console.log("Adding artwork to collection:", artwork);
         addToCart(artwork);
-        // Optional: Show toast or feedback
-        console.log(`Added ${artwork.title} to cart`);
+        
+        // Immediate confirmation for user
+        // alert(`"${artwork.title}" added to collection!`); 
+        
+        setTimeout(() => {
+            navigate('/cart');
+        }, 800); 
     };
 
     const handleChat = () => {
@@ -32,78 +48,111 @@ const ArtworkDetails = () => {
     };
 
     return (
-        <div className="page-content artwork-details-page">
+        <div className="artwork-details-page">
             <div className="container">
-                <Button variant="ghost" className="back-btn mb-6 flex items-center text-zinc-400 hover:text-white transition-colors" onClick={() => navigate(-1)}>
-                    <ArrowLeft size={18} className="mr-2" /> Back to Gallery
-                </Button>
+                {/* Back Button */}
+                <div className="back-btn-row">
+                    <button className="details-back-btn" onClick={() => navigate(-1)}>
+                        <ArrowLeft size={15} />
+                        Back to Gallery
+                    </button>
+                </div>
 
+                {/* Main Grid */}
                 <div className="details-grid">
-                    {/* Image Section */}
-                    <div className="artwork-image-container relative group rounded-md overflow-hidden shadow-lg">
-                        <img
-                            src={artwork.image}
-                            alt={artwork.title}
-                            className="w-full h-auto object-cover"
-                        />
+
+                    {/* ── LEFT: Artwork Image ── */}
+                    <div className="artwork-image-container">
+                        <img src={artwork.image} alt={artwork.title} />
                     </div>
 
-                    {/* Details Section */}
-                    <div className="artwork-info flex flex-col space-y-6">
-                        <div>
-                            <span className="text-amber-500 text-sm font-medium tracking-wider uppercase mb-2 block">
-                                {artwork.category}
-                            </span>
-                            <h1 className="text-4xl font-bold text-white mb-2">
-                                {artwork.title}
-                            </h1>
-                        </div>
+                    {/* ── RIGHT: Info Panel ── */}
+                    <div className="artwork-info">
 
-                        {/* Artist Profile Section */}
-                        <div className="flex-between pb-4 border-b border-zinc-800">
-                            <div className="flex-row-center">
-                                <div className="relative">
+                        {/* Category Tag */}
+                        <span className="details-category-tag">{artwork.category}</span>
+
+                        {/* Title */}
+                        <h1 className="details-title">{artwork.title}</h1>
+
+                        {/* Artist Profile Card */}
+                        <div className="artist-profile-card">
+                            <div className="artist-profile-left">
+                                <div className="artist-avatar-wrap">
                                     <img
-                                        src={artwork.artistImage || "https://ui-avatars.com/api/?name=" + artwork.artist}
-                                        alt={artwork.artist}
-                                        className="artist-avatar w-12 h-12 rounded-full object-cover border border-zinc-700"
+                                        src={artwork.artistImage || `https://ui-avatars.com/api/?name=${artistName}&background=d4af37&color=000`}
+                                        alt={artistName}
+                                        className="artist-avatar"
                                     />
-                                    <div className="verified-badge absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full border border-black" title="Verified Artist">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="verified-icon h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                    <div className="verified-badge" title="Verified Artist">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
-                                <div>
-                                    <p className="text-xs text-zinc-400">Created by</p>
-                                    <h3 className="text-base font-semibold text-white">{artwork.artist}</h3>
+                                <div className="artist-name-wrap">
+                                    <p>Created by</p>
+                                    <h3>{artistName}</h3>
                                 </div>
                             </div>
-
-                            {/* Chat Icon Button */}
-                            <button
-                                onClick={handleChat}
-                                className="chat-action-btn p-2.5 rounded-full bg-amber-500 text-black hover:bg-amber-600 transition-colors shadow-lg hover:shadow-amber-500/20 active:scale-95 transform"
-                                title="Chat with Artist"
-                            >
-                                <MessageCircle size={20} />
+                            <button className="chat-action-btn" onClick={handleChat} title="Chat with Artist">
+                                <MessageCircle size={18} />
                             </button>
                         </div>
 
-                        <div className="text-2xl text-amber-500 font-light">
-                            {artwork.price}
+                        {/* Price */}
+                        <p className="details-price">{displayPrice}</p>
+
+                        {/* Meta Stats */}
+                        <div className="details-meta-row">
+                            <div className="meta-item">
+                                <span className="meta-label">Medium</span>
+                                <span className="meta-value">Digital Art</span>
+                            </div>
+                            <div className="meta-item">
+                                <span className="meta-label">Category</span>
+                                <span className="meta-value">{artwork.category}</span>
+                            </div>
+                            <div className="meta-item">
+                                <span className="meta-label">Edition</span>
+                                <span className="meta-value">1 of 1</span>
+                            </div>
                         </div>
 
-                        <p className="text-zinc-300 leading-relaxed">
-                            Experience the depth and emotion of "{artwork.title}".
-                            A unique digital creation that explores the boundaries of imagination and reality.
-                            (Description placeholder for {artwork.title})
+                        {/* Description */}
+                        <hr className="details-divider" />
+                        <p className="details-description">
+                            Experience the depth and emotion of <strong>"{artwork.title}"</strong>. A unique original artwork by {artistName} that
+                            explores the breathtaking beauty of Nepal's landscapes and culture. Each piece is a one-of-a-kind
+                            creation, capturing a moment that lives forever in color and form.
                         </p>
 
-                        <div className="pt-4">
-                            <Button size="lg" className="w-full bg-white text-black hover:bg-zinc-200 font-semibold" onClick={handleAddToCart}>
-                                <ShoppingBag size={20} className="mr-2" /> Add to Collection
-                            </Button>
+                        {/* Actions */}
+                        <div className="details-actions">
+                            <button className="btn-add-cart" onClick={handleAddToCart}>
+                                <ShoppingBag size={18} />
+                                Add to Collection
+                            </button>
+                            <button className="btn-chat-artist" onClick={handleChat}>
+                                <MessageCircle size={18} />
+                                Chat with Artist
+                            </button>
+                        </div>
+
+                        {/* Trust Badges */}
+                        <div className="details-trust">
+                            <div className="trust-badge">
+                                <Shield size={14} />
+                                <span>Secure Checkout</span>
+                            </div>
+                            <div className="trust-badge">
+                                <RotateCcw size={14} />
+                                <span>Easy Returns</span>
+                            </div>
+                            <div className="trust-badge">
+                                <Award size={14} />
+                                <span>Verified Artist</span>
+                            </div>
                         </div>
                     </div>
                 </div>

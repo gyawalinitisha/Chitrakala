@@ -2,10 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/home/Hero';
 import ArtworkCard from '../components/ui/ArtworkCard';
-import { artworks } from '../data/mockData';
+import { useGallery } from '../context/GalleryContext';
 import './Home.css';
 
 const Home = () => {
+    const { artworks } = useGallery();
     const featuredArtworks = artworks.slice(0, 3);
 
     return (
