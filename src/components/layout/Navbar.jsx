@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { Menu, X, ShoppingCart, LogOut, MessageCircle } from 'lucide-react';
+import { Menu, X, ShoppingCart, MessageCircle } from 'lucide-react';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -34,12 +34,14 @@ const Navbar = () => {
                     </Link>
 
                     <div className="nav-actions">
-                        <Link to="/cart" className="action-btn cart-btn">
-                            <ShoppingCart size={22} />
-                            {cartItems.length > 0 && <span className="cart-count">{cartItems.length}</span>}
-                        </Link>
+                        {user?.role !== 'admin' && user?.role !== 'artist' && (
+                            <Link to="/cart" className="action-btn cart-btn">
+                                <ShoppingCart size={22} />
+                                {cartItems.length > 0 && <span className="cart-count">{cartItems.length}</span>}
+                            </Link>
+                        )}
 
-                        {user && (
+                        {user && user.role !== 'admin' && (
                             <Link to="/inbox" className="action-btn" title="Messages">
                                 <MessageCircle size={22} />
                             </Link>
@@ -94,13 +96,17 @@ const Navbar = () => {
                         <Link to="/admin" className="sidebar-link" onClick={() => setIsOpen(false)} style={{ color: '#eab308' }}>Admin Console</Link>
                     )}
 
+                    {user && (
+                        <Link to="/settings" className="sidebar-link" onClick={() => setIsOpen(false)}>Settings</Link>
+                    )}
+
                     {!user && (
                         <Link to="/auth" className="sidebar-link mobile-only" onClick={() => setIsOpen(false)}>Sign In</Link>
                     )}
 
                     {user && (
-                        <button className="sidebar-link sidebar-logout" onClick={() => { 
-                            logout(); 
+                        <button className="sidebar-link sidebar-logout" onClick={() => {
+                            logout();
                             setIsOpen(false);
                             navigate('/');
                         }}>

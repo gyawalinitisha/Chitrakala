@@ -98,6 +98,33 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const googleLogin = async (credential) => {
+        setError(null);
+        try {
+            const res = await fetch(`${API_URL}/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: credential })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('token', data.token);
+                setUser(data);
+                return data;
+            } else {
+                setError(data.message || 'Google Auth failed');
+                throw new Error(data.message || 'Google Auth failed');
+            }
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        }
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem('token');
@@ -108,6 +135,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         login,
         signup,
+        googleLogin,
         logout,
         loading,
         error
@@ -115,7 +143,13 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {loading ? (
+                <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8f8f8', color: '#111' }}>
+                    <div className="loading-spinner"></div>
+                    <p style={{ marginTop: '1rem', fontFamily: 'Playfair Display, serif', fontSize: '1.2rem' }}>Chitrakala - Digital Art Gallery</p>
+                    <p style={{ color: '#666', fontSize: '0.9rem' }}>Verifying your session...</p>
+                </div>
+            ) : children}
         </AuthContext.Provider>
     );
 };

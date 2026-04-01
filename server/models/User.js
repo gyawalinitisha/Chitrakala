@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Please add a password'],
+        required: false, // Optional for Google Auth users
     },
     role: {
         type: String,
@@ -26,7 +26,15 @@ const userSchema = mongoose.Schema({
     profileImage: {
         type: String,
         default: "",
-    }
+    },
+    bio: {
+        type: String,
+        default: "",
+    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    }],
 }, {
     timestamps: true,
 });

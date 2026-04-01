@@ -23,6 +23,9 @@ const ChatWindow = () => {
 
     if (!isOpen || !activeChat) return null;
 
+    // Admin users should not have access to chat
+    if (user?.role === 'admin') return null;
+
     const myId = user?._id || user?.id;
     const otherId = activeChat.artistId || activeChat._id || activeChat.id;
 

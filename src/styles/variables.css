@@ -1,26 +1,26 @@
 :root {
-  /* Premium Dark Palette */
-  --color-bg-main: #0a0a0a;
-  /* Deep Black */
-  --color-bg-secondary: #141414;
-  /* Charcoal */
-  --color-bg-card: #1c1c1c;
-  /* Surface */
+  /* Light Palette */
+  --color-bg-main: #ffffff;
+  /* White */
+  --color-bg-secondary: #f5f5f5;
+  /* Light Grey */
+  --color-bg-card: #ffffff;
+  /* White Surface */
 
   --color-primary: #d4af37;
   /* Metallic Gold */
   --color-primary-hover: #f9d77e;
   /* Light Gold */
 
-  --color-text-main: #f0f0f0;
-  /* Off-white */
-  --color-text-muted: #a0a0a0;
-  /* Grey */
+  --color-text-main: #111111;
+  /* Dark text */
+  --color-text-muted: #666666;
+  /* Medium Grey */
   --color-text-accent: #d4af37;
   /* Gold text */
 
-  --color-border: #333333;
-  --color-overlay: rgba(0, 0, 0, 0.7);
+  --color-border: #e0e0e0;
+  --color-overlay: rgba(255, 255, 255, 0.7);
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -46,11 +46,11 @@
   /* ── Legacy aliases (keeps all existing CSS files working) ── */
   --gold-primary: #d4af37;
   --gold-gradient: linear-gradient(135deg, #d4af37, #f9d77e);
-  --text-primary: #f0f0f0;
-  --text-secondary: #a0a0a0;
-  --bg-primary: #0a0a0a;
-  --bg-card: #1c1c1c;
-  --bg-secondary: #141414;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --bg-primary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-secondary: #f5f5f5;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;

@@ -1,0 +1,238 @@
+/* ═══════════════════════════════════════
+   SETTINGS PAGE — Light theme
+═══════════════════════════════════════ */
+
+.settings-page {
+    min-height: 100vh;
+    background: var(--color-bg-secondary, #f5f5f5);
+    padding-bottom: 6rem;
+}
+
+.settings-container {
+    max-width: 680px;
+    padding-top: 7rem;
+}
+
+.settings-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+}
+.settings-back-btn:hover { color: #d4af37; }
+
+.settings-header {
+    margin-bottom: 2.5rem;
+}
+.settings-header h1 {
+    font-family: var(--font-heading, 'Playfair Display', serif);
+    font-size: 2.4rem;
+    color: #111;
+    margin: 0 0 0.4rem;
+}
+.settings-header p {
+    color: #888;
+    font-size: 0.95rem;
+}
+
+/* ── Cards ── */
+.settings-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.settings-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1.4rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.settings-card-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 0.2rem;
+}
+.settings-card-header p {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0;
+}
+
+/* ── Form ── */
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.settings-field label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.settings-field input,
+.settings-field textarea {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: #111;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.settings-field input:focus,
+.settings-field textarea:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    background: #fff;
+}
+
+.settings-input-disabled {
+    opacity: 0.55;
+    cursor: not-allowed !important;
+    background: #f5f5f5 !important;
+}
+
+.settings-hint {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+/* ── Password input with toggle ── */
+.settings-pw-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.settings-pw-wrap input {
+    flex: 1;
+    padding-right: 3rem;
+}
+
+.settings-pw-wrap button {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+.settings-pw-wrap button:hover { color: #d4af37; }
+
+/* ── Messages ── */
+.settings-err {
+    font-size: 0.85rem;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
+}
+
+.settings-success {
+    font-size: 0.85rem;
+    color: #059669;
+    background: #f0fdf4;
+    border: 1px solid #6ee7b7;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ── Save button ── */
+.settings-save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.8rem;
+    background: linear-gradient(135deg, #d4af37, #f9d77e);
+    color: #111;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+}
+.settings-save-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
+}
+.settings-save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ── Google note ── */
+.settings-google-note {
+    font-size: 0.88rem;
+    color: #777;
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px dashed #ddd;
+}
+
+@media (max-width: 600px) {
+    .settings-container { padding-top: 6rem; }
+    .settings-card { padding: 1.4rem; }
+    .settings-header h1 { font-size: 1.8rem; }
+}

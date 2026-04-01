@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const dotenv = require('dotenv').config();
 const cors = require('cors');
 const connectDB = require('./config/db');
+const { initSocket } = require('./socket');
 
 const port = process.env.PORT || 5000;
 
@@ -18,6 +19,9 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+
+// Make io available to route files
+initSocket(io);
 
 // Socket.io Logic
 io.on('connection', (socket) => {

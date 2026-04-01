@@ -10,10 +10,10 @@
 }
 
 .navbar.scrolled {
-    background: rgba(10, 10, 10, 0.95);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     padding: 1rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-container {
@@ -162,16 +162,16 @@
     right: 0;
     width: 380px;
     height: 100vh;
-    background: #000000;
-    /* Solid black like reference */
+    background: #ffffff;
+    /* Light white background */
     padding: 3rem 2rem;
     z-index: 1050;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
     transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-menu.active {
@@ -187,7 +187,7 @@
 .close-btn {
     background: none;
     border: none;
-    color: var(--text-secondary);
+    color: #666666;
     cursor: pointer;
     transition: color 0.3s, transform 0.3s;
 }
@@ -208,11 +208,11 @@
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: #666666;
     text-decoration: none;
     transition: color 0.3s, transform 0.3s;
     padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     /* Optional subtle divider */
     display: flex;
     justify-content: space-between;

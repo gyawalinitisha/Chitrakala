@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import './Hero.css';
 
 const Hero = () => {
+    const navigate = useNavigate();
     return (
         <section className="hero">
             <div className="hero-background">
@@ -29,8 +31,8 @@ const Hero = () => {
                         A curated digital sanctuary for exquisite local artworks. Connect with creators, explore heritage, and collect masterpieces.
                     </p>
                     <div className="hero-actions">
-                        <Button size="lg" onClick={() => window.location.href = '/gallery'}>Explore Gallery</Button>
-                        <Button variant="secondary" size="lg">Start Collecting</Button>
+                        <Button size="lg" onClick={() => navigate('/gallery')}>Explore Gallery</Button>
+                        <Button variant="secondary" size="lg" onClick={() => navigate('/auth')}>Start Collecting</Button>
                     </div>
                 </motion.div>
             </div>

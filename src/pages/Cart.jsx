@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
 import { Trash2, ShoppingBag, Shield, Lock, CheckCircle } from 'lucide-react';
@@ -7,11 +8,27 @@ import './Cart.css';
 
 const Cart = () => {
     const { cartItems, removeFromCart, cartTotal } = useCart();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const handleCheckout = () => {
         navigate('/checkout');
     };
+
+    if (user?.role === 'admin') {
+        return (
+            <div className="page-content container cart-page empty-state">
+                <div className="cart-orb-1"></div>
+                <div className="cart-orb-2"></div>
+                <div className="empty-cart-icon">
+                    <Shield size={52} />
+                </div>
+                <h1>Admin Account</h1>
+                <p>Admin accounts cannot make purchases. Use the Admin Console to manage the platform.</p>
+                <Button to="/admin" variant="primary">Go to Admin Console</Button>
+            </div>
+        );
+    }
 
     if (cartItems.length === 0) {
         return (
@@ -49,6 +66,8 @@ const Cart = () => {
                 {/* Items List */}
                 <div className="cart-items">
                     {cartItems.map((item) => {
+                        if (!item) return null;
+                        
                         // Handle artist as string or object
                         const artistName = typeof item.artist === 'string' ? item.artist : item.artist?.name || 'Unknown Artist';
                         // Handle price formatting

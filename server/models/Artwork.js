@@ -26,6 +26,22 @@ const artworkSchema = mongoose.Schema({
         required: true,
         ref: 'User',
     },
+    widthCm: {
+        type: Number,
+        default: null,
+    },
+    heightCm: {
+        type: Number,
+        default: null,
+    },
+    isSold: {
+        type: Boolean,
+        default: false,
+    },
+    isApproved: {
+        type: Boolean,
+        default: true,
+    },
 }, {
     timestamps: true,
 });

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { GoogleLogin } from '@react-oauth/google';
 import './Auth.css';
 
 const getPasswordStrength = (password) => {
@@ -29,8 +30,29 @@ const Auth = () => {
         role: 'collector'
     });
     const navigate = useNavigate();
-    const { login, signup } = useAuth();
+    const location = useLocation();
+    const { login, signup, googleLogin } = useAuth();
+    const from = location.state?.from || null;
     const [error, setError] = useState('');
+
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const userData = await googleLogin(credentialResponse.credential);
+            if (userData.role === 'artist') {
+                navigate('/artist-dashboard');
+            } else if (userData.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate(from || '/');
+            }
+        } catch (err) {
+            setError(err.message || 'Google authentication failed.');
+        }
+    };
+
+    const handleGoogleError = () => {
+        setError('Google authentication failed. Please try again.');
+    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -71,7 +93,7 @@ const Auth = () => {
             } else if (userData.role === 'admin') {
                 navigate('/admin');
             } else {
-                navigate('/');
+                navigate(from || '/');
             }
         } catch (err) {
             setError(err.message || 'Authentication failed. Please try again.');
@@ -187,7 +209,18 @@ const Auth = () => {
                     </Button>
                 </form>
 
-                <div className="auth-footer">
+                <div className="google-auth-container" style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                     <div className="divider" style={{ width: '100%', textAlign: 'center', borderBottom: '1px solid var(--border-color)', lineHeight: '0.1em', margin: '10px 0 20px' }}>
+                        <span style={{ background: 'var(--bg-main)', padding: '0 10px', color: 'var(--text-secondary)' }}>or</span>
+                     </div>
+                     <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        useOneTap
+                     />
+                </div>
+
+                <div className="auth-footer" style={{ marginTop: '20px' }}>
                     <p>
                         {isLogin ? "Don't have an account? " : "Already have an account? "}
                         <button className="text-gold" onClick={() => { setIsLogin(!isLogin); setError(''); }}>

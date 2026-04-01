@@ -21,7 +21,7 @@ const Home = () => {
 
                 <div className="artwork-grid">
                     {featuredArtworks.map(art => (
-                        <ArtworkCard key={art.id} artwork={art} />
+                        <ArtworkCard key={art._id || art.id} artwork={art} />
                     ))}
                 </div>
             </section>

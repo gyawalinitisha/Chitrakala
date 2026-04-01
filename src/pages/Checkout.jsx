@@ -18,7 +18,7 @@ const Checkout = () => {
         phone: '',
     });
 
-    const [paymentMethod, setPaymentMethod] = useState('Khalti Mock');
+    const [paymentMethod, setPaymentMethod] = useState('Khalti');
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handleInputChange = (e) => {
@@ -52,9 +52,14 @@ const Checkout = () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    artworks: cartItems.map(item => item._id || item.id), // MongoDB IDs if available
-                    totalAmount: cartTotal, 
-                    shippingAddress: `${shippingDetails.address}, ${shippingDetails.city}`,
+                    artworks: cartItems.filter(item => item !== null).map(item => item._id || item.id),
+                    totalAmount: cartTotal,
+                    deliveryDetails: {
+                        name:    shippingDetails.fullName,
+                        address: shippingDetails.address,
+                        city:    shippingDetails.city,
+                        phone:   shippingDetails.phone,
+                    },
                     paymentMethod
                 })
             });
@@ -76,6 +81,15 @@ const Checkout = () => {
             setIsProcessing(false);
         }
     };
+
+    if (user?.role === 'admin') {
+        return (
+            <div className="page-content container checkout-page">
+                <h2 style={{ textAlign: 'center', marginTop: '4rem', color: '#666' }}>Admin accounts cannot make purchases.</h2>
+                <button onClick={() => navigate('/admin')} className="place-order-btn" style={{width: '200px', margin: '2rem auto', display: 'block'}}>Go to Admin Console</button>
+            </div>
+        );
+    }
 
     if (cartItems.length === 0) {
         return (
@@ -124,30 +138,23 @@ const Checkout = () => {
                         <h2 style={{marginTop: '2rem'}}>Payment Method</h2>
                         <div className="payment-methods">
                             <div 
-                                className={`payment-method ${paymentMethod === 'Khalti Mock' ? 'active' : ''}`}
-                                onClick={() => setPaymentMethod('Khalti Mock')}
+                                className={`payment-method ${paymentMethod === 'Khalti' ? 'active' : ''}`}
+                                onClick={() => setPaymentMethod('Khalti')}
                             >
                                 <h3>Khalti</h3>
-                                <p style={{fontSize: '0.8rem', opacity: 0.7}}>Pay via Wallet</p>
+                                <p style={{fontSize: '0.8rem', opacity: 0.7}}>Pay Online via Wallet</p>
                             </div>
                             <div 
-                                className={`payment-method ${paymentMethod === 'eSewa Mock' ? 'active' : ''}`}
-                                onClick={() => setPaymentMethod('eSewa Mock')}
+                                className={`payment-method ${paymentMethod === 'COD' ? 'active' : ''}`}
+                                onClick={() => setPaymentMethod('COD')}
                             >
-                                <h3>eSewa</h3>
-                                <p style={{fontSize: '0.8rem', opacity: 0.7}}>Pay via Wallet</p>
-                            </div>
-                            <div 
-                                className={`payment-method ${paymentMethod === 'Card Mock' ? 'active' : ''}`}
-                                onClick={() => setPaymentMethod('Card Mock')}
-                            >
-                                <h3>Card</h3>
-                                <p style={{fontSize: '0.8rem', opacity: 0.7}}>Visa / Mastercard</p>
+                                <h3>Cash on Delivery</h3>
+                                <p style={{fontSize: '0.8rem', opacity: 0.7}}>Pay when you receive</p>
                             </div>
                         </div>
 
                         <button type="submit" className="place-order-btn" disabled={isProcessing}>
-                            {isProcessing ? 'Processing Payment...' : `Pay NRP ${cartTotal.toLocaleString('en-IN')}`}
+                            {isProcessing ? 'Processing...' : paymentMethod === 'COD' ? `Place Order — NRP ${cartTotal.toLocaleString('en-IN')}` : `Pay via Khalti — NRP ${cartTotal.toLocaleString('en-IN')}`}
                         </button>
                     </form>
                 </div>
@@ -155,15 +162,21 @@ const Checkout = () => {
                 <div className="order-summary-checkout glass-card">
                     <h2>Order Summary</h2>
                     <div className="summary-items">
-                        {cartItems.map((item) => (
-                            <div key={item.id} className="summary-item">
-                                <img src={item.image} alt={item.title} />
-                                <div className="summary-item-details">
-                                    <h4>{item.title}</h4>
-                                    <p>NRP {item.price}</p>
+                        {cartItems.map((item) => {
+                            if (!item) return null;
+                            const itemPrice = typeof item.price === 'number'
+                                ? item.price.toLocaleString('en-IN')
+                                : item.price;
+                            return (
+                                <div key={item._id || item.id} className="summary-item">
+                                    <img src={item.image} alt={item.title} />
+                                    <div className="summary-item-details">
+                                        <h4>{item.title}</h4>
+                                        <p>NRP {itemPrice}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <div className="summary-totals">

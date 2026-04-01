@@ -20,7 +20,8 @@ const orderSchema = mongoose.Schema({
     paymentMethod: {
         type: String,
         required: true,
-        default: 'eSewa Mock',
+        enum: ['Khalti', 'COD'],
+        default: 'Khalti',
     },
     paymentStatus: {
         type: String,
@@ -29,8 +30,18 @@ const orderSchema = mongoose.Schema({
     },
     shippingAddress: {
         type: String,
-        required: true,
-    }
+    },
+    deliveryDetails: {
+        name:    { type: String },
+        address: { type: String },
+        city:    { type: String },
+        phone:   { type: String },
+    },
+    orderStatus: {
+        type: String,
+        enum: ['Processing', 'Shipped', 'Delivered'],
+        default: 'Processing',
+    },
 }, {
     timestamps: true,
 });

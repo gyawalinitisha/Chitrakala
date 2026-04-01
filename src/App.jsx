@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -20,11 +21,18 @@ import Inbox from './pages/Inbox';
 import ArtistDashboard from "./pages/artist/ArtistDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/AdminRoute";
+import ProtectedRoute from "./components/ProtectedRoute";
+import CollectorRoute from "./components/CollectorRoute";
 import UserProfile from "./pages/UserProfile";
+import Settings from "./pages/Settings";
+
+// Fallback Client ID if none provided in .env
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 
 function App() {
   return (
-    <AuthProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
       <ChatProvider>
         <GalleryProvider>
           <CartProvider>
@@ -37,11 +45,19 @@ function App() {
                   <Route path="/artist/:id" element={<ArtistProfile />} />
                   <Route path="/artwork/:id" element={<ArtworkDetails />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/inbox" element={<Inbox />} />
-                  <Route path="/profile" element={<UserProfile />} />
-                  <Route path="/artist-dashboard" element={<ArtistDashboard />} />
+                  {/* Collector-only routes (artists/admins are redirected) */}
+                  <Route element={<CollectorRoute />}>
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                  </Route>
+
+                  {/* Protected User Routes */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/inbox" element={<Inbox />} />
+                    <Route path="/profile" element={<UserProfile />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/artist-dashboard" element={<ArtistDashboard />} />
+                  </Route>
 
                   {/* Admin Protected Route */}
                   <Route element={<AdminRoute />}>
@@ -55,7 +71,8 @@ function App() {
           </CartProvider>
         </GalleryProvider>
       </ChatProvider>
-    </AuthProvider >
+    </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 
