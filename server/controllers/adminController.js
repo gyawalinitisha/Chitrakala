@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Artwork = require('../models/Artwork');
 const Order = require('../models/Order');
+const Notification = require('../models/Notification');
+const { getIO } = require('../socket');
 
 // @desc    Get dashboard stats
 // @route   GET /api/admin/stats
@@ -15,14 +17,29 @@ const getStats = async (req, res) => {
         const pendingOrders    = await Order.countDocuments({ orderStatus: 'Processing' });
         const pendingApprovals = await Artwork.countDocuments({ isApproved: false });
 
-        // Total revenue from all completed/delivered orders
-        const revenueAgg = await Order.aggregate([
-            { $match: { paymentStatus: { $in: ['Completed'] } } },
-            { $group: { _id: null, total: { $sum: '$totalAmount' } } }
-        ]);
-        const totalRevenue = revenueAgg[0]?.total || 0;
+        // Total revenue: recalculate from actual artwork prices for accuracy
+        const completedOrders = await Order.find({ paymentStatus: 'Completed' })
+            .populate('artworks', 'price');
+        const totalRevenue = completedOrders.reduce((sum, order) => {
+            const orderTotal = order.artworks.reduce((s, art) => s + (Number(art.price) || 0), 0);
+            return sum + orderTotal;
+        }, 0);
 
         res.json({ userCount, artistCount, artworkCount, orderCount, soldCount, pendingOrders, pendingApprovals, totalRevenue });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+// @desc    Get basic public stats for Home page
+// @route   GET /api/artworks/stats
+// @access  Public
+const getPublicStats = async (req, res) => {
+    try {
+        const artistCount = await User.countDocuments({ role: 'artist' });
+        const artworkCount = await Artwork.countDocuments({ isApproved: true });
+        const soldCount = await Artwork.countDocuments({ isSold: true });
+        res.json({ artistCount, artworkCount, soldCount });
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
@@ -98,6 +115,26 @@ const toggleArtworkApproval = async (req, res) => {
         if (!artwork) return res.status(404).json({ message: 'Artwork not found' });
         artwork.isApproved = !artwork.isApproved;
         await artwork.save();
+
+        try {
+            const message = artwork.isApproved 
+                ? `Your artwork "${artwork.title}" has been approved and published!`
+                : `Your artwork "${artwork.title}" approval was revoked and it has been hidden.`;
+            
+            const notif = await Notification.create({
+                recipient: artwork.artist,
+                type: 'SYSTEM',
+                message,
+                referenceId: artwork._id
+            });
+            const io = getIO();
+            if (io) {
+                io.to(String(artwork.artist)).emit('new_notification', notif);
+            }
+        } catch (err) {
+            console.error('Failed to send approval notification:', err);
+        }
+
         res.json(artwork);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -160,6 +197,7 @@ const updateOrderStatus = async (req, res) => {
 
 module.exports = {
     getStats,
+    getPublicStats,
     getUsers,
     deleteUser,
     getArtworks,

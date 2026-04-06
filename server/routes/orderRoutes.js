@@ -3,6 +3,8 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Artwork = require('../models/Artwork');
 const { protect } = require('../middleware/authMiddleware');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
 const { getIO } = require('../socket');
 
 // @desc    Create new order (Checkout)
@@ -15,15 +17,27 @@ router.post('/', protect, async (req, res) => {
         return res.status(400).json({ message: 'No artworks in order' });
     }
 
+    // Validate that none of the artworks are already sold
+    const artsInDb = await Artwork.find({ _id: { $in: artworks } });
+    const alreadySold = artsInDb.filter(a => a.isSold);
+    if (alreadySold.length > 0) {
+        return res.status(400).json({ 
+            message: 'One or more artworks in your cart have already been sold. Please refresh your cart.' 
+        });
+    }
+
     if (!deliveryDetails?.name || !deliveryDetails?.address || !deliveryDetails?.city || !deliveryDetails?.phone) {
         return res.status(400).json({ message: 'Please provide complete delivery details' });
     }
 
     try {
+        // Always calculate totalAmount server-side from real DB prices
+        const serverTotal = artsInDb.reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+
         const order = new Order({
             user: req.user._id,
             artworks,
-            totalAmount,
+            totalAmount: serverTotal,
             shippingAddress: `${deliveryDetails.address}, ${deliveryDetails.city}`,
             deliveryDetails,
             paymentMethod: paymentMethod || 'Khalti',
@@ -44,17 +58,47 @@ router.post('/', protect, async (req, res) => {
                 .select('title artist price')
                 .populate('artist', 'name');
             const io = getIO();
-            if (io) {
-                soldArtworks.forEach(art => {
-                    const artistId = String(art.artist?._id || art.artist);
+
+            for (const art of soldArtworks) {
+                const artistId = String(art.artist?._id || art.artist);
+                
+                // Add DB Notification for artist
+                await Notification.create({
+                    recipient: artistId,
+                    type: 'ARTWORK_PURCHASED',
+                    message: `Your artwork "${art.title}" was purchased!`,
+                    referenceId: createdOrder._id
+                });
+
+                if (io) {
                     io.to(artistId).emit('artwork_sold', {
                         artworkTitle: art.title,
                         artworkPrice: art.price,
                         buyerName: req.user.name,
                         orderId: createdOrder._id,
                     });
+                }
+            }
+
+            // Notify Customer
+            await Notification.create({
+                recipient: req.user._id,
+                type: 'NEW_ORDER',
+                message: `Your order was placed successfully. Total: Rs. ${serverTotal}`,
+                referenceId: createdOrder._id
+            });
+
+            // Notify Admins
+            const admins = await User.find({ role: 'admin' });
+            for (const admin of admins) {
+                await Notification.create({
+                    recipient: admin._id,
+                    type: 'SYSTEM',
+                    message: `A new order was placed by ${req.user.name}.`,
+                    referenceId: createdOrder._id
                 });
             }
+
         } catch (notifyErr) {
             console.error('Failed to send sold notification:', notifyErr);
         }
@@ -113,6 +157,18 @@ router.patch('/:id/status', protect, async (req, res) => {
         }
 
         await order.save();
+
+        // Notify customer about order status update
+        try {
+            await Notification.create({
+                recipient: order.user,
+                type: 'ORDER_STATUS',
+                message: `Your order status has been updated to "${orderStatus}".`,
+                referenceId: order._id
+            });
+        } catch (error) {
+            console.error('Failed to create notification for status update:', error);
+        }
 
         const updated = await Order.findById(order._id)
             .populate('user', 'name email')

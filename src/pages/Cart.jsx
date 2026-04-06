@@ -71,13 +71,18 @@ const Cart = () => {
                         // Handle artist as string or object
                         const artistName = typeof item.artist === 'string' ? item.artist : item.artist?.name || 'Unknown Artist';
                         // Handle price formatting
-                        const displayPrice = typeof item.price === 'number' ? `NRP ${item.price.toLocaleString('en-IN')}` : item.price;
+                        const displayPrice = typeof item.price === 'number' ? `NPR ${item.price.toLocaleString('en-IN')}` : item.price;
                         // Use _id from API or id from localStorage
                         const itemId = item._id || item.id;
                         
                         return (
                             <div key={itemId} className="cart-item">
-                                <img src={item.image} alt={item.title} className="cart-item-image" />
+                                <img
+                                src={item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"%3E%3Crect width="200" height="150" fill="%23222"%2F%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23666" font-size="11" font-family="sans-serif"%3ENo image%3C%2Ftext%3E%3C%2Fsvg%3E'}
+                                alt={item.title}
+                                className="cart-item-image"
+                                onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150"%3E%3Crect width="200" height="150" fill="%23222"%2F%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23666" font-size="11" font-family="sans-serif"%3ENo image%3C%2Ftext%3E%3C%2Fsvg%3E'; }}
+                            />
                                 <div className="cart-item-details">
                                     <h3>{item.title}</h3>
                                     <p className="cart-item-artist">by {artistName}</p>
@@ -100,7 +105,7 @@ const Cart = () => {
                     <h2>Order Summary</h2>
                     <div className="summary-row">
                         <span>Subtotal ({cartItems.length} items)</span>
-                        <span>NRP {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
+                        <span>NPR {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
                     </div>
                     <div className="summary-row">
                         <span>Shipping</span>
@@ -108,7 +113,7 @@ const Cart = () => {
                     </div>
                     <div className="summary-row total">
                         <span>Total</span>
-                        <span>NRP {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
+                        <span>NPR {(Number(cartTotal) || 0).toLocaleString('en-IN')}</span>
                     </div>
 
                     <button className="khalti-btn" onClick={handleCheckout}>

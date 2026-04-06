@@ -26,11 +26,11 @@ const artworkSchema = mongoose.Schema({
         required: true,
         ref: 'User',
     },
-    widthCm: {
+    width: {
         type: Number,
         default: null,
     },
-    heightCm: {
+    height: {
         type: Number,
         default: null,
     },
@@ -40,7 +40,7 @@ const artworkSchema = mongoose.Schema({
     },
     isApproved: {
         type: Boolean,
-        default: true,
+        default: false,
     },
 }, {
     timestamps: true,

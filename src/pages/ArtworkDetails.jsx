@@ -116,7 +116,7 @@ const ArtworkDetails = () => {
         : artwork.artist?.name || 'Unknown Artist';
 
     const displayPrice = typeof artwork.price === 'number'
-        ? `NRP ${artwork.price.toLocaleString('en-IN')}`
+        ? `NPR ${artwork.price.toLocaleString('en-IN')}`
         : artwork.price || 'Price on Request';
 
     const similarArtworks = Array.isArray(artworks)
@@ -152,6 +152,7 @@ const ArtworkDetails = () => {
                             src={artwork.image}
                             alt={artwork.title}
                             style={{ width: '100%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
+                            onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"%3E%3Crect width="600" height="400" fill="%23222"%2F%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23666" font-size="16" font-family="sans-serif"%3EImage unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; }}
                         />
                         <button className="btn-view-room" onClick={() => setIsRoomModalOpen(true)}>
                             <Maximize2 size={16} /> View in Room
@@ -194,15 +195,15 @@ const ArtworkDetails = () => {
                                 <span className="meta-label">Edition</span>
                                 <span className="meta-value">1 of 1</span>
                             </div>
-                            {(artwork.widthCm || artwork.heightCm) && (
+                            {(artwork.width || artwork.height) && (
                                 <div className="meta-item" style={{ gridColumn: '1 / -1' }}>
                                     <span className="meta-label">Dimensions</span>
                                     <span className="meta-value">
-                                        {artwork.widthCm && artwork.heightCm
-                                            ? `${artwork.widthCm} × ${artwork.heightCm} cm`
-                                            : artwork.widthCm
-                                            ? `W: ${artwork.widthCm} cm`
-                                            : `H: ${artwork.heightCm} cm`}
+                                        {artwork.width && artwork.height
+                                            ? `${artwork.width} × ${artwork.height} inches`
+                                            : artwork.width
+                                            ? `W: ${artwork.width} inches`
+                                            : `H: ${artwork.height} inches`}
                                     </span>
                                 </div>
                             )}
@@ -271,7 +272,7 @@ const ArtworkDetails = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
                             >
-                                <img src={artwork.image} alt="On Wall" />
+                                <img src={artwork.image} alt="On Wall" onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"%3E%3Crect width="600" height="400" fill="%23222"%2F%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23666" font-size="16" font-family="sans-serif"%3EImage unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; }} />
                                 <div className="artwork-shadow"></div>
                             </motion.div>
                             <div className="room-info-badge">Viewing: {artwork.title}</div>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import io from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
@@ -14,75 +14,93 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [activeChat, setActiveChat] = useState(null); // { userId, name, image }
     const [isOpen, setIsOpen] = useState(false);
+    const [unreadMessages, setUnreadMessages] = useState(0);
 
-    useEffect(() => {
-        if (user) {
-            // Connect to backend
-            const newSocket = io('http://localhost:5000');
-            setSocket(newSocket);
-
-            newSocket.on('connect', () => {
-                console.log('✓ Socket connected:', newSocket.id);
-                newSocket.emit('join_room', user._id || user.id);
-            });
-
-            newSocket.on('disconnect', () => {
-                console.log('✗ Socket disconnected');
-            });
-
-            newSocket.on('connect_error', (error) => {
-                console.error('Socket connection error:', error);
-            });
-
-            /* 
-               CRITICAL FIX: Only append messages if they belong to the ACTIVE chat.
-               Otherwise, just let them be fetched when the user opens that chat later.
-               Optional: Add a "notification" badge logic here later.
-            */
-            newSocket.on('receive_message', (message) => {
-                // Use the ref so we always have the current active chat without stale closure
-                setMessages((prev) => {
-                    const current = activeChatRef.current;
-                    if (!current) {
-                        console.log('No active chat, ignoring message:', message);
-                        return prev;
-                    }
-                    
-                    const otherId = current.artistId || current._id || current.id;
-                    const senderId = message.sender?._id || message.sender;
-                    const receiverId = message.receiver?._id || message.receiver;
-                    const myId = user._id || user.id;
-                    
-                    console.log('Received message:', { senderId, receiverId, myId, otherId });
-                    
-                    // Check if this message is for the current conversation
-                    const isForThisChat = 
-                        (senderId === otherId && receiverId === myId) ||
-                        (senderId === myId && receiverId === otherId);
-                    
-                    if (isForThisChat) {
-                        console.log('Message added to current chat');
-                        return [...prev, message];
-                    }
-                    
-                    console.log('Message is not for current chat');
-                    return prev;
-                });
-            });
-
-            return () => newSocket.close();
-        }
-    }, [user]);
-
-    // Use a ref to track active chat for the socket listener to check against without re-binding
+    // Use a ref to track active chat inside socket listeners (avoids stale closures)
     const activeChatRef = useRef(null);
     useEffect(() => {
         activeChatRef.current = activeChat;
     }, [activeChat]);
 
-    // Re-bind listener to properly filter? No, standard way is to filter in UI or use a Ref.
-    // Let's keep it simple: Append to global messages, but ChatWindow filters what it shows.
-    // AND fetchHistory overwrites 'messages'.
+    // Fetch unread count from the conversations endpoint
+    const fetchUnreadCount = useCallback(async () => {
+        if (!user) return;
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const res = await fetch('http://localhost:5000/api/chat/conversations/all', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUnreadMessages(data.filter(c => c.unread).length);
+            }
+        } catch (err) {
+            console.error('Failed to fetch unread message count:', err);
+        }
+    }, [user]);
+
+    // Initialise unread count when user logs in / out
+    useEffect(() => {
+        if (user) {
+            fetchUnreadCount();
+        } else {
+            setUnreadMessages(0);
+        }
+    }, [user, fetchUnreadCount]);
+
+    useEffect(() => {
+        if (!user) return;
+
+        const newSocket = io('http://localhost:5000');
+        setSocket(newSocket);
+
+        newSocket.on('connect', () => {
+            console.log('✓ Socket connected:', newSocket.id);
+            newSocket.emit('join_room', user._id || user.id);
+        });
+
+        newSocket.on('disconnect', () => {
+            console.log('✗ Socket disconnected');
+        });
+
+        newSocket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+        });
+
+        newSocket.on('receive_message', (message) => {
+            const current = activeChatRef.current;
+            const senderId   = String(message.sender?._id   || message.sender);
+            const receiverId = String(message.receiver?._id || message.receiver);
+            const myId       = String(user._id || user.id);
+
+            // Only increment unread when I am the receiver and the chat window
+            // for this sender is NOT currently open
+            if (receiverId === myId) {
+                const isForActiveChat =
+                    current &&
+                    String(current.artistId || current._id || current.id) === senderId;
+
+                if (!isForActiveChat) {
+                    setUnreadMessages(prev => prev + 1);
+                }
+            }
+
+            // Append to the visible message list only if it belongs to the active chat
+            setMessages(prev => {
+                if (!current) return prev;
+
+                const otherId = String(current.artistId || current._id || current.id);
+                const isForThisChat =
+                    (senderId === otherId && receiverId === myId) ||
+                    (senderId === myId   && receiverId === otherId);
+
+                return isForThisChat ? [...prev, message] : prev;
+            });
+        });
+
+        return () => newSocket.close();
+    }, [user]);
 
     const sendMessage = async (receiverId, messageContent) => {
         if (!socket || !user) {
@@ -101,7 +119,6 @@ export const ChatProvider = ({ children }) => {
                     if (resp.ok) {
                         const real = await resp.json();
                         targetId = real._id;
-                        // Update activeChat so UI reflects real id
                         setActiveChat(prev => ({ ...prev, _id: real._id }));
                     } else {
                         console.warn('Could not resolve real artist id for', artistName);
@@ -113,26 +130,42 @@ export const ChatProvider = ({ children }) => {
         }
 
         const messageData = {
-            sender: user._id || user.id,
-            receiver: targetId,
+            sender:       user._id || user.id,
+            receiver:     targetId,
             receiverName: activeChat?.artist || activeChat?.name || activeChat?.artistName,
-            message: messageContent,
+            message:      messageContent,
         };
 
         console.log('Sending message (resolved):', messageData);
         socket.emit('send_message', messageData);
         // Optimistic update
-        setMessages((prev) => [...prev, { ...messageData, createdAt: new Date() }]);
+        setMessages(prev => [...prev, { ...messageData, createdAt: new Date() }]);
+    };
+
+    // Mark all messages from a user as read via API, then refresh the count
+    const markConversationRead = async (targetId) => {
+        if (!targetId || String(targetId).startsWith('artist_')) return;
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            await fetch(`http://localhost:5000/api/chat/${targetId}/read`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            // Re-fetch the real count rather than guessing the delta
+            await fetchUnreadCount();
+        } catch (err) {
+            console.error('Failed to mark conversation as read:', err);
+        }
     };
 
     const openChat = async (artist) => {
         setActiveChat(artist);
         setIsOpen(true);
 
-        // Fetch real history and get real artist ID if needed
         if (user) {
             let targetId = artist.artistId || artist._id || artist.id;
-            
+
             // If targetId is a placeholder (like "artist_1"), fetch the real artist from backend
             if (targetId && String(targetId).startsWith('artist_')) {
                 try {
@@ -141,41 +174,37 @@ export const ChatProvider = ({ children }) => {
                         console.error('No artist name to lookup');
                         return;
                     }
-                    
                     console.log(`Fetching real artist ID for: ${artistName}`);
                     const response = await fetch(`http://localhost:5000/api/auth/user/${encodeURIComponent(artistName)}`);
-                    
                     if (response.ok) {
                         const realArtist = await response.json();
                         console.log('Real artist fetched:', realArtist._id);
                         targetId = realArtist._id;
-                        // Update activeChat with real ID
                         setActiveChat(prev => ({ ...prev, _id: realArtist._id }));
                     }
                 } catch (error) {
-                    console.error("Failed to fetch real artist ID", error);
+                    console.error('Failed to fetch real artist ID', error);
                     return;
                 }
             }
-            
-            // Now fetch chat history with the correct ID
+
             if (targetId) {
+                // Mark this conversation's messages as read
+                markConversationRead(targetId);
+
+                // Fetch full chat history
                 try {
                     const token = localStorage.getItem('token');
                     if (!token) return;
-
                     const historyResponse = await fetch(`http://localhost:5000/api/chat/${targetId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
-
                     if (historyResponse.ok) {
                         const history = await historyResponse.json();
                         setMessages(history);
                     }
                 } catch (error) {
-                    console.error("Failed to load chat history", error);
+                    console.error('Failed to load chat history', error);
                 }
             }
         }
@@ -194,7 +223,9 @@ export const ChatProvider = ({ children }) => {
         activeChat,
         isOpen,
         openChat,
-        closeChat
+        closeChat,
+        unreadMessages,
+        fetchUnreadCount,
     };
 
     return (

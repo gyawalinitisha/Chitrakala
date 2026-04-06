@@ -21,9 +21,10 @@ const Gallery = () => {
     const [sortOrder, setSortOrder] = useState('Newest');
     const [searchTerm, setSearchTerm] = useState('');
     const [artists, setArtists] = useState([]);
-    const { artworks, loading } = useGallery();
+    const { artworks, loading, fetchArtworks } = useGallery();
 
     useEffect(() => {
+        fetchArtworks(); // Refreshes gallery inventory whenever this page is opened
         const fetchArtists = async () => {
             try {
                 const res = await fetch(`${API_URL}/auth/artists`);
@@ -82,6 +83,9 @@ const Gallery = () => {
 
     // 4. Sorting
     displayedArtworks = [...displayedArtworks].sort((a, b) => {
+        if (sortOrder === 'Newest') {
+            return new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0);
+        }
         const pA = getPriceNumber(a?.price);
         const pB = getPriceNumber(b?.price);
         if (sortOrder === 'PriceLowHigh') return pA - pB;
@@ -158,9 +162,9 @@ const Gallery = () => {
                         <label>Price:</label>
                         <select value={priceFilter} onChange={(e) => setPriceFilter(e.target.value)}>
                             <option value="All">All Prices</option>
-                            <option value="Under5000">Under NRP 5,000</option>
-                            <option value="5000-20000">NRP 5,000 - 20,000</option>
-                            <option value="Over20000">Over NRP 20,000</option>
+                            <option value="Under5000">Under NPR 5,000</option>
+                            <option value="5000-20000">NPR 5,000 - 20,000</option>
+                            <option value="Over20000">Over NPR 20,000</option>
                         </select>
                     </div>
                     <div className="filter-group">

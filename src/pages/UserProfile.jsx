@@ -317,7 +317,7 @@ const UserProfile = () => {
                                                         </span>
                                                     </div>
                                                     <span className="order-artwork-price">
-                                                        NRP {art.price?.toLocaleString('en-IN')}
+                                                        NPR {art.price?.toLocaleString('en-IN')}
                                                     </span>
                                                 </div>
                                             ))}
@@ -329,7 +329,7 @@ const UserProfile = () => {
                                                 {order.artworks.length} {order.artworks.length === 1 ? 'item' : 'items'}
                                             </span>
                                             <span className="order-total">
-                                                NRP {order.totalAmount?.toLocaleString('en-IN')}
+                                                NPR {order.totalAmount?.toLocaleString('en-IN')}
                                             </span>
                                         </div>
 

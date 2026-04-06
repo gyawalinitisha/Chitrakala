@@ -7,6 +7,13 @@ export const useCart = () => {
     return useContext(CartContext);
 };
 
+// Compact cart item for localStorage — omit the base64 image to stay within quota
+const toStorageItem = (item) => {
+    if (!item) return null;
+    const { image, description, ...rest } = item;
+    return rest;
+};
+
 // Load cart from localStorage at initialization (before any render or effect)
 const loadCartFromStorage = () => {
     try {
@@ -43,9 +50,15 @@ export const CartProvider = ({ children }) => {
         }
     }, [user, loading]);
 
-    // Persist cart to localStorage whenever it changes
+    // Persist cart to localStorage whenever it changes.
+    // Strip image/description to keep storage size small (base64 images can be MBs each).
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
+        try {
+            const compact = cartItems.map(toStorageItem);
+            localStorage.setItem('cart', JSON.stringify(compact));
+        } catch (err) {
+            console.warn('Cart: could not persist to localStorage (quota exceeded?)', err);
+        }
     }, [cartItems]);
 
     const showNotification = (message, type = 'success') => {

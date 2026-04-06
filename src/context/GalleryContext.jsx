@@ -14,6 +14,20 @@ export const GalleryProvider = ({ children }) => {
 
     // Fetch artworks from API
     const fetchArtworks = async () => {
+        const handleFallback = () => {
+            try {
+                const stored = localStorage.getItem('artworks');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        setArtworks(parsed);
+                        return;
+                    }
+                }
+            } catch (e) { console.error("Storage fallback failed", e); }
+            setArtworks(initialArtworks); // Last resort
+        };
+
         try {
             setLoading(true);
             const res = await fetch(`${API_URL}/artworks`);
@@ -21,72 +35,28 @@ export const GalleryProvider = ({ children }) => {
                 const data = await res.json();
                 console.log("Fetched artworks from API:", data);
                 
-                // If API returns data, use it
-                if (Array.isArray(data) && data.length > 0) {
+                if (Array.isArray(data)) {
                     setArtworks(data);
-                    localStorage.setItem('artworks', JSON.stringify(data));
-                } else {
-                    // API returned empty, check localStorage first, then use mock data
-                    const storedArtworks = localStorage.getItem('artworks');
-                    if (storedArtworks) {
-                        try {
-                            const parsed = JSON.parse(storedArtworks);
-                            if (Array.isArray(parsed) && parsed.length > 0) {
-                                setArtworks(parsed);
-                            } else {
-                                console.log("Using mock data - no artworks in storage");
-                                setArtworks(initialArtworks);
-                            }
-                        } catch (e) {
-                            setArtworks(initialArtworks);
-                        }
-                    } else {
-                        console.log("Using mock data - no data in localStorage");
-                        setArtworks(initialArtworks);
+                    // Attempt to save but don't crash if quota is exceeded
+                    try {
+                        localStorage.setItem('artworks', JSON.stringify(data));
+                    } catch (e) {
+                        console.warn("Storage quota exceeded, could not cache artworks locally.");
                     }
+                } else {
+                    handleFallback();
                 }
             } else {
-                // API request failed - fallback to localStorage or mock data
-                console.log("API request failed, falling back to localStorage");
-                const storedArtworks = localStorage.getItem('artworks');
-                if (storedArtworks) {
-                    try {
-                        const parsed = JSON.parse(storedArtworks);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            setArtworks(parsed);
-                        } else {
-                            setArtworks(initialArtworks);
-                        }
-                    } catch (e) {
-                        setArtworks(initialArtworks);
-                    }
-                } else {
-                    setArtworks(initialArtworks);
-                }
+                handleFallback();
             }
         } catch (err) {
             console.error("Failed to fetch artworks:", err);
-            // Fallback to localStorage then mock data
-            try {
-                const storedArtworks = localStorage.getItem('artworks');
-                if (storedArtworks) {
-                    const parsed = JSON.parse(storedArtworks);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        setArtworks(parsed);
-                    } else {
-                        setArtworks(initialArtworks);
-                    }
-                } else {
-                    setArtworks(initialArtworks);
-                }
-            } catch (storageErr) {
-                console.error("Failed to parse localStorage:", storageErr);
-                setArtworks(initialArtworks);
-            }
+            handleFallback();
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         // Fetch on mount

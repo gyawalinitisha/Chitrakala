@@ -20,8 +20,8 @@ const EMPTY_FORM = {
     category: 'Landscape',
     description: '',
     image: '',
-    widthCm: '',
-    heightCm: '',
+    width: '',
+    height: '',
 };
 
 const ArtistDashboard = () => {
@@ -159,8 +159,8 @@ const ArtistDashboard = () => {
             category: art.category || 'Landscape',
             description: art.description || '',
             image: art.image || '',
-            widthCm: art.widthCm ?? '',
-            heightCm: art.heightCm ?? '',
+            width: art.width ?? '',
+            height: art.height ?? '',
         });
         setImagePreview(art.image || '');
         setFormError('');
@@ -223,8 +223,8 @@ const ArtistDashboard = () => {
                     price: Number(formData.price),
                     category: formData.category,
                     image: formData.image,
-                    widthCm: formData.widthCm ? Number(formData.widthCm) : null,
-                    heightCm: formData.heightCm ? Number(formData.heightCm) : null,
+                    width: formData.width ? Number(formData.width) : null,
+                    height: formData.height ? Number(formData.height) : null,
                 })
             });
 
@@ -345,7 +345,7 @@ const ArtistDashboard = () => {
                 <div className="sale-notif-banner">
                     <Bell size={18} />
                     <span>
-                        <strong>New Sale!</strong> "{saleNotif.artworkTitle}" was purchased by {saleNotif.buyerName} for NRP {Number(saleNotif.artworkPrice).toLocaleString('en-IN')}
+                        <strong>New Sale!</strong> "{saleNotif.artworkTitle}" was purchased by {saleNotif.buyerName} for NPR {Number(saleNotif.artworkPrice).toLocaleString('en-IN')}
                     </span>
                     <button className="sale-notif-close" onClick={() => setSaleNotif(null)}>
                         <X size={16} />
@@ -403,7 +403,7 @@ const ArtistDashboard = () => {
                                 </select>
                             </div>
                             <Input
-                                label="Price (NRP)"
+                                label="Price (NPR)"
                                 id="price"
                                 type="number"
                                 value={formData.price}
@@ -414,20 +414,20 @@ const ArtistDashboard = () => {
 
                         <div className="form-row-2col">
                             <Input
-                                label="Width (cm)"
-                                id="widthCm"
+                                label="Width (inches)"
+                                id="width"
                                 type="number"
                                 placeholder="e.g. 60"
-                                value={formData.widthCm}
-                                onChange={(e) => setFormData({ ...formData, widthCm: e.target.value })}
+                                value={formData.width}
+                                onChange={(e) => setFormData({ ...formData, width: e.target.value })}
                             />
                             <Input
-                                label="Height (cm)"
-                                id="heightCm"
+                                label="Height (inches)"
+                                id="height"
                                 type="number"
                                 placeholder="e.g. 90"
-                                value={formData.heightCm}
-                                onChange={(e) => setFormData({ ...formData, heightCm: e.target.value })}
+                                value={formData.height}
+                                onChange={(e) => setFormData({ ...formData, height: e.target.value })}
                             />
                         </div>
 
@@ -505,7 +505,7 @@ const ArtistDashboard = () => {
                     {myArtworks.length > 0 ? myArtworks.map(art => {
                             const artId = art._id || art.id;
                             const displayPrice = typeof art.price === 'number'
-                                ? `NRP ${art.price.toLocaleString('en-IN')}`
+                                ? `NPR ${art.price.toLocaleString('en-IN')}`
                                 : art.price;
                             const isToggling = togglingId === artId;
 
@@ -628,7 +628,7 @@ const ArtistDashboard = () => {
                                             <div className="artist-order-artwork-info">
                                                 <span className="artist-order-artwork-title">{art.title}</span>
                                                 <span className="artist-order-artwork-price">
-                                                    NRP {art.price?.toLocaleString('en-IN')}
+                                                    NPR {art.price?.toLocaleString('en-IN')}
                                                 </span>
                                             </div>
                                         </div>
@@ -637,7 +637,7 @@ const ArtistDashboard = () => {
 
                                 <div className="artist-order-footer">
                                     <span className="artist-order-total">
-                                        Total: NRP {order.totalAmount?.toLocaleString('en-IN')}
+                                        Total: NPR {order.totalAmount?.toLocaleString('en-IN')}
                                     </span>
                                 </div>
 

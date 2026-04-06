@@ -1,76 +1,61 @@
+.home-page {
+    padding-bottom: 4rem;
+}
+
 .section-featured {
-    padding: var(--spacing-2xl) var(--spacing-md);
+    padding-top: 4rem;
 }
 
 .section-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 2.5rem;
 }
 
 .section-title {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-xs);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
 .section-subtitle {
-    color: var(--color-text-muted);
     font-size: 1.1rem;
+    color: var(--text-muted);
 }
 
 .artwork-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--spacing-lg);
+    gap: 2rem;
+    margin-bottom: 3rem;
 }
 
 .section-about {
-    background: var(--color-bg-secondary);
-    padding: var(--spacing-2xl) 0;
-    margin-top: var(--spacing-2xl);
+    background-color: var(--bg-secondary);
+    padding: 5rem 0;
+    margin-top: 4rem;
 }
 
 .about-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-2xl);
+    gap: 4rem;
     align-items: center;
 }
 
 .about-text h2 {
-    font-size: 3rem;
-    margin-bottom: var(--spacing-md);
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
 .about-text p {
-    color: var(--color-text-muted);
-    margin-bottom: var(--spacing-lg);
     font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    color: var(--text-muted);
 }
 
 .about-image img {
-    border-radius: 4px;
-    box-shadow: var(--shadow-card);
-    filter: grayscale(20%);
-    transition: var(--transition-medium);
-}
-
-.about-image:hover img {
-    filter: grayscale(0%);
-}
-
-.btn-text-arrow {
-    color: var(--color-primary);
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: margin 0.3s;
-}
-
-.btn-text-arrow:hover {
-    margin-left: 10px;
-}
-
-@media (max-width: 768px) {
-    .about-content {
-        grid-template-columns: 1fr;
-    }
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
 }

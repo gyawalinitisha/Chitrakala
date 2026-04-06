@@ -14,7 +14,7 @@ const ArtworkCard = ({ artwork }) => {
     const artistName = typeof artist === 'string' ? artist : artist?.name || 'Unknown';
     const artworkId = _id || id;
     const displayPrice = typeof price === 'number'
-        ? `NRP ${price.toLocaleString('en-IN')}`
+        ? `NPR ${price.toLocaleString('en-IN')}`
         : price || 'Price on Request';
 
     const handleAddToCart = (e) => {
@@ -32,7 +32,13 @@ const ArtworkCard = ({ artwork }) => {
         <div className={`artwork-card animate-fade-in${isSold ? ' card-sold' : ''}`}>
             <div className="card-image-wrapper">
                 <Link to={`/artwork/${artworkId}`}>
-                    <img src={image} alt={title} className="card-image" loading="lazy" />
+                    <img
+                        src={image}
+                        alt={title}
+                        className="card-image"
+                        loading="lazy"
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"%3E%3Crect width="400" height="300" fill="%23222"%2F%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%23666" font-size="14" font-family="sans-serif"%3EImage unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; }}
+                    />
                 </Link>
 
                 {/* Sold Out ribbon */}
@@ -45,7 +51,7 @@ const ArtworkCard = ({ artwork }) => {
                             <Heart size={17} />
                         </button>
                         {/* Hide cart button when sold or when user is admin */}
-                        {!isSold && user?.role !== 'admin' && (
+                        {!isSold && user?.role !== 'admin' && user?.role !== 'artist' && (
                             <button className="like-btn" aria-label="Add to cart" onClick={handleAddToCart}>
                                 <ShoppingBag size={17} />
                             </button>

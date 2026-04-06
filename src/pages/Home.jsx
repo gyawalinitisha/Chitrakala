@@ -1,30 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/home/Hero';
-import ArtworkCard from '../components/ui/ArtworkCard';
-import { useGallery } from '../context/GalleryContext';
+import FeaturedSection from '../components/home/FeaturedSection';
 import './Home.css';
 
 const Home = () => {
-    const { artworks } = useGallery();
-    const featuredArtworks = artworks.slice(0, 3);
-
     return (
         <div className="home-page">
             <Hero />
 
-            <section className="container section-featured">
-                <div className="section-header">
-                    <h2 className="section-title">Featured <span className="text-gold">Masterpieces</span></h2>
-                    <p className="section-subtitle">Hand-picked selections from Nepal's finest creators.</p>
-                </div>
-
-                <div className="artwork-grid">
-                    {featuredArtworks.map(art => (
-                        <ArtworkCard key={art._id || art.id} artwork={art} />
-                    ))}
-                </div>
-            </section>
+            <FeaturedSection />
 
             <section className="section-about">
                 <div className="container about-content">

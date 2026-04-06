@@ -2,18 +2,29 @@ const express = require('express');
 const router = express.Router();
 const Artwork = require('../models/Artwork');
 const { protect } = require('../middleware/authMiddleware');
+const Notification = require('../models/Notification');
+const User = require('../models/User');
+const { getIO } = require('../socket');
+const { getPublicStats } = require('../controllers/adminController');
 
-// @desc    Get all AVAILABLE artworks (isSold: false)
+// @desc    Get all APPROVED artworks (both sold and available)
 // @route   GET /api/artworks
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const artworks = await Artwork.find().populate('artist', 'name profileImage');
+        const artworks = await Artwork.find({ isApproved: true })
+            .populate('artist', 'name profileImage')
+            .sort({ createdAt: -1 });
         res.status(200).json(artworks);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 });
+
+// @desc    Get public statistics
+// @route   GET /api/artworks/stats
+// @access  Public
+router.get('/stats', getPublicStats);
 
 // @desc    Get all artworks by a specific artist (public portfolio view)
 // @route   GET /api/artworks/artist/:artistId
@@ -21,7 +32,7 @@ router.get('/', async (req, res) => {
 // NOTE: must be defined BEFORE /:id
 router.get('/artist/:artistId', async (req, res) => {
     try {
-        const artworks = await Artwork.find({ artist: req.params.artistId })
+        const artworks = await Artwork.find({ artist: req.params.artistId, isApproved: true })
             .populate('artist', 'name profileImage')
             .sort({ createdAt: -1 });
         res.status(200).json(artworks);
@@ -36,7 +47,9 @@ router.get('/artist/:artistId', async (req, res) => {
 // NOTE: must be defined BEFORE /:id to avoid "my" being treated as an ID
 router.get('/my', protect, async (req, res) => {
     try {
-        const artworks = await Artwork.find({ artist: req.user._id }).populate('artist', 'name profileImage');
+        const artworks = await Artwork.find({ artist: req.user._id })
+            .populate('artist', 'name profileImage')
+            .sort({ createdAt: -1 });
         res.status(200).json(artworks);
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
@@ -67,7 +80,7 @@ router.post('/', protect, async (req, res) => {
     }
 
     try {
-        const { title, description, price, image, category } = req.body;
+        const { title, description, price, image, category, width, height } = req.body;
 
         if (!title || !description || !price || !image || !category) {
             return res.status(400).json({ message: 'Please add all fields' });
@@ -79,8 +92,29 @@ router.post('/', protect, async (req, res) => {
             price,
             image,
             category,
+            width,
+            height,
             artist: req.user._id
         });
+
+        // Notify Admins
+        try {
+            const io = getIO();
+            const admins = await User.find({ role: 'admin' });
+            for (const admin of admins) {
+                const notif = await Notification.create({
+                    recipient: admin._id,
+                    type: 'SYSTEM',
+                    message: `Artist ${req.user.name} uploaded new artwork "${title}". Review needed.`,
+                    referenceId: artwork._id
+                });
+                if (io) {
+                    io.to(String(admin._id)).emit('new_notification', notif);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to notify admins of new artwork:', error);
+        }
 
         res.status(201).json(artwork);
     } catch (error) {
@@ -104,6 +138,18 @@ router.put('/:id', protect, async (req, res) => {
         }
 
         const updatedArtwork = await Artwork.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+        // Notify artist
+        try {
+            await Notification.create({
+                recipient: req.user._id,
+                type: 'ARTWORK_UPDATED',
+                message: `Your artwork "${updatedArtwork.title}" was successfully updated.`,
+                referenceId: updatedArtwork._id
+            });
+        } catch (error) {
+           console.error('Failed to send notification on artwork update:', error);
+        }
 
         res.status(200).json(updatedArtwork);
     } catch (error) {

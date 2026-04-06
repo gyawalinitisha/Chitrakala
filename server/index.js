@@ -90,6 +90,7 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/artworks', require('./routes/artworkRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 // Simple root route
 app.get('/', (req, res) => {

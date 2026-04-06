@@ -103,7 +103,6 @@ const Settings = () => {
     return (
         <div className="settings-page">
             <div className="container settings-container">
-
                 <button className="settings-back-btn" onClick={() => navigate(-1)}>
                     <ArrowLeft size={16} /> Back
                 </button>

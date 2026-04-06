@@ -13,7 +13,7 @@ const Layout = ({ children }) => {
                 {children}
             </main>
             <footer style={{ padding: '2rem', textAlign: 'center', borderTop: '1px solid var(--color-border)', marginTop: '4rem' }}>
-                <p className="text-muted">© 2025 Digital Art Gallery. All rights reserved.</p>
+                <p className="text-muted">© 2026 Digital Art Gallery. All rights reserved.</p>
             </footer>
         </div>
     );

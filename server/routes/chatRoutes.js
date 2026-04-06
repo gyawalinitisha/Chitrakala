@@ -42,6 +42,25 @@ router.get('/conversations/all', protect, async (req, res) => {
     }
 });
 
+// Mark all unread messages FROM a specific user as read
+// Call this when the user opens a chat window with that person
+router.patch('/:userId/read', protect, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const myId = req.user.id;
+
+        await Message.updateMany(
+            { sender: userId, receiver: myId, readStatus: false },
+            { $set: { readStatus: true } }
+        );
+
+        res.json({ message: 'Messages marked as read' });
+    } catch (error) {
+        console.error('Error marking messages as read:', error);
+        res.status(500).json({ message: 'Error marking messages as read' });
+    }
+});
+
 // Get chat history between two users
 router.get('/:userId', protect, async (req, res) => {
     try {

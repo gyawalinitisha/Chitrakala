@@ -275,7 +275,7 @@ function ArtworksTab({ artworks, onDelete, onToggleApproval }) {
                                         </div>
                                     </td>
                                     <td className="adm-muted">{artistName}</td>
-                                    <td>NRP {fmt(art.price)}</td>
+                                    <td>NPR {fmt(art.price)}</td>
                                     <td className="adm-muted">{art.category}</td>
                                     <td>
                                         {art.isSold
@@ -404,7 +404,7 @@ function OrdersTab({ orders, onStatusChange }) {
                                             ))}
                                         </div>
                                     </td>
-                                    <td><strong>NRP {fmt(order.totalAmount)}</strong></td>
+                                    <td><strong>NPR {fmt(order.totalAmount)}</strong></td>
                                     <td className="adm-muted">{order.paymentMethod}</td>
                                     <td><StatusBadge status={order.orderStatus || 'Processing'} /></td>
                                     <td className="adm-muted">{new Date(order.createdAt).toLocaleDateString()}</td>
@@ -501,7 +501,7 @@ const AdminDashboard = () => {
         { label: 'Pending Approvals',  value: stats.pendingApprovals ?? '—', icon: Clock,       color: '#f97316' },
         {
             label: 'Total Revenue',
-            value: stats.totalRevenue != null ? `NRP ${fmt(stats.totalRevenue)}` : '—',
+            value: stats.totalRevenue != null ? `NPR ${fmt(stats.totalRevenue)}` : '—',
             icon: DollarSign,
             color: '#22c55e',
         },

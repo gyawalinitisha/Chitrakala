@@ -154,7 +154,7 @@ const Checkout = () => {
                         </div>
 
                         <button type="submit" className="place-order-btn" disabled={isProcessing}>
-                            {isProcessing ? 'Processing...' : paymentMethod === 'COD' ? `Place Order — NRP ${cartTotal.toLocaleString('en-IN')}` : `Pay via Khalti — NRP ${cartTotal.toLocaleString('en-IN')}`}
+                            {isProcessing ? 'Processing...' : paymentMethod === 'COD' ? `Place Order — NPR ${cartTotal.toLocaleString('en-IN')}` : `Pay via Khalti — NPR ${cartTotal.toLocaleString('en-IN')}`}
                         </button>
                     </form>
                 </div>
@@ -169,10 +169,14 @@ const Checkout = () => {
                                 : item.price;
                             return (
                                 <div key={item._id || item.id} className="summary-item">
-                                    <img src={item.image} alt={item.title} />
+                                    <img
+                                        src={item.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Crect width="80" height="80" fill="%23222"%2F%3E%3C%2Fsvg%3E'}
+                                        alt={item.title}
+                                        onError={(e) => { e.target.onerror = null; e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Crect width="80" height="80" fill="%23222"%2F%3E%3C%2Fsvg%3E'; }}
+                                    />
                                     <div className="summary-item-details">
                                         <h4>{item.title}</h4>
-                                        <p>NRP {itemPrice}</p>
+                                        <p>NPR {itemPrice}</p>
                                     </div>
                                 </div>
                             );
@@ -182,15 +186,15 @@ const Checkout = () => {
                     <div className="summary-totals">
                         <div className="summary-row">
                             <span>Subtotal</span>
-                            <span>NRP {cartTotal.toLocaleString('en-IN')}</span>
+                            <span>NPR {cartTotal.toLocaleString('en-IN')}</span>
                         </div>
                         <div className="summary-row">
                             <span>Shipping</span>
-                            <span>NRP 1,000</span>
+                            <span>NPR 1,000</span>
                         </div>
                         <div className="summary-row total">
                             <span>Total</span>
-                            <span>NRP {(cartTotal + 1000).toLocaleString('en-IN')}</span>
+                            <span>NPR {(cartTotal + 1000).toLocaleString('en-IN')}</span>
                         </div>
                     </div>
                 </div>

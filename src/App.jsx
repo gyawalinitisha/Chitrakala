@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -27,6 +28,9 @@ import UserProfile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
 
 // Fallback Client ID if none provided in .env
+import { NotificationProvider } from "./context/NotificationContext";
+
+// Fallback Client ID if none provided in .env
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
 
 function App() {
@@ -34,10 +38,12 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
       <ChatProvider>
+      <NotificationProvider>
         <GalleryProvider>
           <CartProvider>
             <Router>
               <Layout>
+                <ErrorBoundary>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/gallery" element={<Gallery />} />
@@ -64,12 +70,14 @@ function App() {
                     <Route path="/admin" element={<AdminDashboard />} />
                   </Route>
                 </Routes>
+                </ErrorBoundary>
 
                 <ChatWindow />
               </Layout>
             </Router>
           </CartProvider>
         </GalleryProvider>
+      </NotificationProvider>
       </ChatProvider>
     </AuthProvider>
     </GoogleOAuthProvider>

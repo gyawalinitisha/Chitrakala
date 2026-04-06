@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import './Inbox.css';
 
 const Inbox = () => {
     const { user } = useAuth();
-    const { openChat, isOpen } = useChat();
+    const { openChat, isOpen, fetchUnreadCount } = useChat();
     const navigate = useNavigate();
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,8 +30,11 @@ const Inbox = () => {
             }
         };
 
-        if (user) fetchConversations();
-    }, [user, isOpen]);
+        if (user) {
+            fetchConversations();
+            fetchUnreadCount();
+        }
+    }, [user, isOpen, fetchUnreadCount]);
 
     if (!user) {
         navigate('/auth');
@@ -77,7 +80,7 @@ const Inbox = () => {
                         </div>
                     ) : (
                         <div className="conversation-list">
-                            {conversations.map((convo, i) => (
+                            {conversations.map((convo) => (
                                 <div
                                     key={convo.user._id}
                                     onClick={() => openChat(convo.user)}
